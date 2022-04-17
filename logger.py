@@ -1,7 +1,4 @@
 import mysql.connector
-import time
-import random
-from datetime import datetime
 from dbparams import pi_user, database
 
 
