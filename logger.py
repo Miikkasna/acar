@@ -4,6 +4,7 @@ from datetime import datetime
 
 
 class DB_logger():
+    
     def __init__(self, batch=False, batch_size=100):
         self.con = mysql.connector.connect(
             host=pi_user.host,
@@ -15,12 +16,15 @@ class DB_logger():
         self.batch_size=batch_size
         self.batch = batch
         self.test_intervals = []
+
     def create_performance_table(self):
         self.cur.execute('''CREATE TABLE performance (testcase INTEGER, iid int NOT NULL AUTO_INCREMENT PRIMARY KEY, ms INTEGER)''')
         self.con.commit()
+
     def create_testcases_table(self):
         self.cur.execute('''CREATE TABLE testcases (testcase int NOT NULL AUTO_INCREMENT PRIMARY KEY, test_stamp VARCHAR(300))''')
         self.con.commit()
+
     def set_new_testcase(self):
         self.cur.execute('''INSERT INTO testcases (test_stamp) VALUES (%s)''', (str(datetime.now()), ))
         self.con.commit()
@@ -38,6 +42,7 @@ class DB_logger():
             test_interval = (self.testcase_id, interval)
             self.cur.execute('''INSERT INTO performance (testcase, ms) VALUES (%s, %s)''', test_interval)
         self.con.commit()
+
     def get_performances(self, limit=None):
         if limit is None:
             self.cur.execute('''SELECT ms FROM performance WHERE testcase = {}'''.format(self.testcase_id))
