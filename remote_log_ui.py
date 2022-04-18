@@ -16,7 +16,6 @@ def connect():
     )
 	return con
 
-<<<<<<< HEAD
 with con:
 	while True:
 		try:
