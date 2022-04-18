@@ -15,13 +15,12 @@ def connect():
         database=database
     )
 	return con
-con = connect()
-cur = con.cursor()
-cur.execute('''SELECT max(testcase) FROM testcases''')
-tid = cur.fetchone()[0]
+
 while True:
 	con = connect()
 	cur = con.cursor()
+	cur.execute('''SELECT max(testcase) FROM testcases''')
+	tid = cur.fetchone()[0]
 	cur.execute('''SELECT iid, ms FROM performance WHERE testcase = {} ORDER BY iid DESC LIMIT 100'''.format(tid))
 	rows = np.array(cur.fetchall())
 	ids = np.flip(rows[:, 0])
