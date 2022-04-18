@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def connect(user):
+def connect():
 	con = mysql.connector.connect(
         host=win_user.host,
         user=win_user.user,
@@ -34,4 +34,4 @@ while True:
 		pass
 
 
-print(ms.mean(), ms.std(), ms.max(), ms.min())
+#print(ms.mean(), ms.std(), ms.max(), ms.min())
