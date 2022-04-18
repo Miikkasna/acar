@@ -16,22 +16,21 @@ def connect():
     )
 	return con
 
-
-while True:
-	try:
-		con = connect()
-		cur = con.cursor()
-		cur.execute('''SELECT iid, ms FROM performance WHERE testcase = {} ORDER BY iid DESC LIMIT 100'''.format(520))
-		rows = np.array(cur.fetchall())
-		ids = np.flip(rows[:, 0])
-		ms = np.flip(rows[:, 1])
-		plt.cla()
-		plt.plot(ids, ms)
-		plt.ylim([0, 200])
-		plt.pause(1.5)
-	except:
-		time.sleep(1.0)
-		pass
+with con:
+	while True:
+		try:
+			cur = con.cursor()
+			cur.execute('''SELECT iid, ms FROM performance WHERE testcase = {} ORDER BY iid DESC LIMIT 100'''.format(520))
+			rows = np.array(cur.fetchall())
+			ids = np.flip(rows[:, 0])
+			ms = np.flip(rows[:, 1])
+			plt.cla()
+			plt.plot(ids, ms)
+			plt.ylim([0, 200])
+			plt.pause(1.5)
+		except:
+			time.sleep(1.0)
+			pass
 
 
 #print(ms.mean(), ms.std(), ms.max(), ms.min())
