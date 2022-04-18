@@ -21,7 +21,7 @@ while True:
 	try:
 		con = connect()
 		cur = con.cursor()
-		cur.execute('''SELECT iid, ms FROM performance WHERE testcase = {} ORDER BY iid DESC LIMIT 100'''.format(520))
+		cur.execute('''SELECT iid, ms FROM performance WHERE testcase = {} ORDER BY iid DESC LIMIT 100'''.format(522))
 		rows = np.array(cur.fetchall())
 		ids = np.flip(rows[:, 0])
 		ms = np.flip(rows[:, 1])
