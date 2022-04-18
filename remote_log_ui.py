@@ -16,6 +16,7 @@ def connect():
     )
 	return con
 
+<<<<<<< HEAD
 with con:
 	while True:
 		try:
@@ -31,6 +32,7 @@ with con:
 		except:
 			time.sleep(1.0)
 			pass
+
 
 
 #print(ms.mean(), ms.std(), ms.max(), ms.min())
