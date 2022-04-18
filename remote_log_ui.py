@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 
 def connect(user):
-    con = mysql.connector.connect(
+	con = mysql.connector.connect(
         host=win_user.host,
         user=win_user.user,
         password=win_user.password,
