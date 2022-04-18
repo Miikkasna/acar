@@ -15,7 +15,7 @@ def connect():
         database=database
     )
 	return con
-
+con = connect()
 with con:
 	while True:
 		try:
