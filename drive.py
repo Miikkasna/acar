@@ -13,7 +13,7 @@ cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')) # depends on fourcc available camera
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 160)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 120)
-cap.set(cv2.CAP_PROP_FPS, 100)
+cap.set(cv2.CAP_PROP_FPS, 60)
 
 def main():
     # init last time
