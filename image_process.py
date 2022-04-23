@@ -95,15 +95,16 @@ def make_points(image, average):
 
 '''##### DETECTING lane lines in image ######'''
 
-for i in range(1, 400, 4):
+for i in range(1, 600, 2):
     try:
-        image_path = 'C:\\Users\\miikk\\OneDrive\\Desktop\\test2\\image{}.jpg'.format(i)
+        image_path = 'C:\\Users\\sainmi53\\Downloads\\test2\\test2\\image{}.jpg'.format(i)
         image1 = cv2.imread(image_path)
-
         copy = np.copy(image1)
         edges = cv2.Canny(copy,250,100)
         isolated = region(edges)
         #plt.imshow(edges)
+        #plt.figure()
+        #plt.imshow(result)
         #plt.show()
 
         #plt.imshow(isolated)
@@ -113,7 +114,7 @@ for i in range(1, 400, 4):
 
 
         #DRAWING LINES: (order of params) --> region of interest, bin size (P, theta), min intersections needed, placeholder array, 
-        lines = cv2.HoughLinesP(isolated, 10, np.pi/180, 70, np.array([]), minLineLength=70, maxLineGap=10)
+        lines = cv2.HoughLinesP(isolated, 10, np.pi/180, 70, np.array([]), minLineLength=50, maxLineGap=10)
         points = []
         for line in lines:
             points.append(line.reshape(4))
@@ -126,7 +127,7 @@ for i in range(1, 400, 4):
         #plt.show()
         plt.pause(0.2)
         plt.cla()
-    except:
+    except TypeError:
         pass
 
     #cv2.waitKey(0)
