@@ -29,7 +29,8 @@ def stream():
 def snap_shot():
     if request.method == 'POST':
         if request.form.get('action1') == 'Take snap shot':
-            img_path = 'static/{}.jpg'.format(datetime.now())
+            stamp = str(datetime.now()).replace(':', '.')
+            img_path = 'static/{}.jpg'.format(stamp)
             cv2.imwrite(img_path, image)
             print('snap shot taken')
         else:

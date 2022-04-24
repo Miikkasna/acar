@@ -39,6 +39,5 @@ def main():
         log.log_performance(interval)
 
 
-
 if __name__ == "__main__":
     main()
