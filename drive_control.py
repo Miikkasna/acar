@@ -37,7 +37,7 @@ class Driver():
         mcu_pwm.ChangeDutyCycle(duty_cycle*100) #provide duty cycle in the range 0-100
 
     def steer(self, control): # control; 0=middle, -1=full rigth 1=full left
-        pw = self.calc_pulse_width(control)
+        pw = self.calc_pulse_width(control*(-1))
         dc = self.calc_duty_cycle(pw)
         self.set_servo(dc)
 
