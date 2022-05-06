@@ -7,10 +7,9 @@ import matplotlib.image as img
 #video = cv2.VideoWriter('detections.mp4', 0, 20, (320,280))
 
 dir = 'testdrive3'
-for i in range(0, 543, 2):
+for i in range(0, 543, 1):
     img = cv2.imread('{}/{}.jpg'.format(dir, i))
     #img = cv2.imread('testcalib1.jpg')
-
     if False:
         mutable_object = {} 
         fig = plt.figure()
@@ -26,7 +25,6 @@ for i in range(0, 543, 2):
         X_coordinate = mutable_object['click']
     #cv2.imshow('img', img)
     #cv2.waitKey(0)
-    #320, 280 - > 60-160, 15-265
     pts1 = np.float32([
                         [108, 103], #[148, 169],
                         [217, 101], # [206, 171],
@@ -46,17 +44,13 @@ for i in range(0, 543, 2):
     M = cv2.getPerspectiveTransform(pts1, pts2)
     warped = cv2.warpPerspective(img, M, (cols, rows))
 
-    #plt.cla()
-    #plt.imshow(warped)
-    #plt.pause(0.01)
-    #continue
     blur = 7
     blurred = cv2.medianBlur(warped, blur) #cv2.bilateralFilter(gray,10,50,50)
     #cv2.imshow('img', blurred)
     #cv2.waitKey(0)
     minDist = 140
     param1 = 30 #500
-    param2 = 10 #200 #smaller value-> more false circles
+    param2 = 8 #200 #smaller value-> more false circles
     minRadius = 6
     maxRadius = 8 #10
 
@@ -66,9 +60,9 @@ for i in range(0, 543, 2):
     M = cv2.getPerspectiveTransform(pts2, pts1)
     if circles is not None:
         circles = np.uint16(np.around(circles))
-        for i in circles[0,:]:
-            cv2.circle(mask, (i[0], i[1]), i[2], 255, -1)
-
+        for i, v in enumerate(circles[0,:]):
+            cv2.circle(mask, (v[0], v[1]), v[2], 255, -1)
+            cv2.putText(mask, (1+i)*'|', (v[0], v[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1, cv2.LINE_AA)
         mask = cv2.warpPerspective(mask, M, (cols, rows))
         res = cv2.bitwise_not(img,img,mask = mask)
         cv2.putText(res, 'points: {}'.format(circles.shape[1]), (10,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
@@ -76,9 +70,6 @@ for i in range(0, 543, 2):
         res = img
         cv2.putText(res, 'points: 0', (10,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
     # Show result for testing:
-    #video.write(res)
     cv2.imshow('img', res)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-#video.release()
+    cv2.waitKey(40)
 cv2.destroyAllWindows()
