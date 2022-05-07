@@ -48,7 +48,7 @@ for i in range(0, 543, 1):
     blurred = cv2.medianBlur(warped, blur) #cv2.bilateralFilter(gray,10,50,50)
     #cv2.imshow('img', blurred)
     #cv2.waitKey(0)
-    minDist = 140
+    minDist = 110
     param1 = 30 #500
     param2 = 8 #200 #smaller value-> more false circles
     minRadius = 6
@@ -71,5 +71,5 @@ for i in range(0, 543, 1):
         cv2.putText(res, 'points: 0', (10,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
     # Show result for testing:
     cv2.imshow('img', res)
-    cv2.waitKey(40)
+    cv2.waitKey(80)
 cv2.destroyAllWindows()
