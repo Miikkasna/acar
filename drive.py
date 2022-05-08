@@ -5,7 +5,7 @@ from logger import DB_logger
 import numpy as np
 from flask import Flask, Response, send_file
 from drive_control import Idle
-
+import web_server
 
 # set up database logger
 log = DB_logger(batch=True, batch_size=50)
@@ -17,10 +17,6 @@ cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')) # depen
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 280)
 cap.set(cv2.CAP_PROP_FPS, 60)
-
-
-#setup video stream
-import video_stream
 
 # define driver agent
 driver = Idle()
@@ -35,7 +31,7 @@ def main():
         # get camera frame
         ret, frame = cap.read()
         # update stream
-        video_stream.set_image(frame)
+        web_server.set_video_image(frame)
 
         # calculate inputs
         driver.calc_inputs(dt)
