@@ -4,26 +4,26 @@ import numpy as np
 import threading
 from datetime import datetime
 
-image = np.zeros([400,400,3],dtype=np.uint8)
+images = {'video': np.zeros([400,400,3],dtype=np.uint8), 'graph': np.zeros([400,400,3],dtype=np.uint8)}
 app = Flask(__name__)
 
 @app.route("/")
 def index():
     return "Welcome to Acar web server"
 
-def set_image(img):
-    global image
-    image = img
+def set_image(img, stream):
+    global images
+    images[stream] = img
 
 def img_to_bytes(img):
     return cv2.imencode('.jpg', img)[1].tobytes()
 
-def get_image():
+def get_image(stream):
     while True:
-        yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + img_to_bytes(image) + b'\r\n')
+        yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + img_to_bytes(images[stream]) + b'\r\n')
 @app.route("/stream")
 def stream():
-    return Response(get_image(), mimetype="multipart/x-mixed-replace; boundary=frame")
+    return Response(get_image('video'), mimetype="multipart/x-mixed-replace; boundary=frame")
     
 @app.route("/snap_shot", methods=['GET', 'POST'])
 def snap_shot():
@@ -31,7 +31,7 @@ def snap_shot():
         if request.form.get('action1') == 'Take snap shot':
             stamp = str(datetime.now()).replace(':', '.')
             img_path = 'static/{}.jpg'.format(stamp)
-            cv2.imwrite(img_path, image)
+            cv2.imwrite(img_path, images['video'])
             print('snap shot taken')
         else:
             pass

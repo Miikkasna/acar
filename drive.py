@@ -31,7 +31,7 @@ def main():
         # get camera frame
         ret, frame = cap.read()
         # update stream
-        web_server.set_video_image(frame)
+        web_server.set_image(frame, 'video')
 
         # calculate inputs
         driver.calc_inputs(dt)
