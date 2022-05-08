@@ -46,8 +46,8 @@ for i in range(0, 543, 1):
         for i, v in enumerate(circles):
             #cv2.circle(mask, (v[0], v[1]), v[2], 255, -1)
             cv2.putText(mask, (1+i)*'|', (v[0], v[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1, cv2.LINE_AA)
-        x = (circles[:, 0].mean() + circles[0][0]*2)/3 # weighted average
-        y = (circles[:, 1].mean() + circles[0][1]*2)/3 # weighted average
+        x = (circles[:, 0].mean() + circles[0][0])/2 # weighted average
+        y = (circles[:, 1].mean() + circles[0][1])/2 # weighted average
         target = (int(x), int(y))
         mask = cv2.warpPerspective(mask, M, (cols, rows))
         res = cv2.bitwise_not(img,img,mask = mask)
