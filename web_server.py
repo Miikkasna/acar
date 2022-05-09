@@ -12,7 +12,6 @@ def index():
     return "Welcome to Acar web server"
 
 def set_image(img, stream):
-    global images
     images[stream] = img
 
 def img_to_bytes(img):
@@ -24,7 +23,11 @@ def get_image(stream):
 @app.route("/stream")
 def stream():
     return Response(get_image('video'), mimetype="multipart/x-mixed-replace; boundary=frame")
-    
+
+@app.route("/metrics")
+def metrics():
+    return Response(get_image('graph'), mimetype="multipart/x-mixed-replace; boundary=frame")
+
 @app.route("/snap_shot", methods=['GET', 'POST'])
 def snap_shot():
     if request.method == 'POST':
