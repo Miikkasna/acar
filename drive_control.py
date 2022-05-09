@@ -33,9 +33,17 @@ def map(x, in_min, in_max, out_min, out_max):
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
 
+class Car():
+    def __init__(self):
+        self.speed = None
+        self.angle_offset = None
+        self.motor_current = None
+        self.battery_charge = None
+
 class Driver():
     def __init__(self):
-        self.speed = 0
+        self.car = Car()
+
     def calc_pulse_width(self, control):
         return map(control, -1, 1, 950e-6, 2000e-6)
 
@@ -62,7 +70,7 @@ class Driver():
     def calc_inputs(self, dt):
         global counter
         distance = counter/357.0 # calibrated as meters
-        self.speed = distance / dt
+        self.car.speed = distance / dt
         counter = 0
 
 
