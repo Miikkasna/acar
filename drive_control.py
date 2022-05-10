@@ -43,6 +43,8 @@ class Car():
 class Driver():
     def __init__(self):
         self.car = Car()
+    def __init_subclass__(self):
+        Driver.__init__(self)
 
     def calc_pulse_width(self, control):
         return map(control, -1, 1, 950e-6, 2000e-6)

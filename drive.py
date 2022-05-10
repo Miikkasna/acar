@@ -4,7 +4,7 @@ import cv2
 from logger import DB_logger
 import numpy as np
 from flask import Flask, Response, send_file
-from drive_control import Idle
+from drive_control import Idle, GamePad
 import web_server
 
 # set up database logger
