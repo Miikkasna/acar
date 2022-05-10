@@ -13,7 +13,6 @@ log.set_new_testcase()
 
 # define camera
 cap = cv2.VideoCapture(0)
-cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')) # depends on fourcc available camera
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 280)
 cap.set(cv2.CAP_PROP_FPS, 60)
