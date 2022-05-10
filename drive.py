@@ -6,6 +6,7 @@ import numpy as np
 from flask import Flask, Response, send_file
 from drive_control import Idle, GamePad
 import web_server
+import image_process as ip
 
 # set up database logger
 log = DB_logger(batch=True, batch_size=50)
@@ -25,12 +26,17 @@ def main():
     last_time = time.time()
     dt = 0.02 # non zero initialization
     while True:
-        time.sleep(0.1)
+        time.sleep(0.03)
 
         # get camera frame
         ret, frame = cap.read()
+        #process image
+        try:
+            res = ip.process_image(frame, features=False)
+        except:
+            res = frame
         # update stream
-        web_server.set_image(frame, 'video')
+        web_server.set_image(res, 'video')
 
         # calculate inputs
         driver.calc_inputs(dt)
