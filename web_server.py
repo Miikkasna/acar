@@ -25,8 +25,8 @@ def get_image(stream):
 def stream():
     return Response(get_image('video'), mimetype="multipart/x-mixed-replace; boundary=frame")
 
-@app.route("/metrics")
-def metrics():
+@app.route("/dashboard")
+def dashboard():
     return Response(get_image('graph'), mimetype="multipart/x-mixed-replace; boundary=frame")
 
 @app.route("/snap_shot", methods=['GET', 'POST'])
