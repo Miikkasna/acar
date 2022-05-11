@@ -7,6 +7,7 @@ from flask import Flask, Response, send_file
 from drive_control import Idle, GamePad
 import web_server
 import image_process as ip
+from metrics import Metrics
 
 # set up database logger
 log = DB_logger(batch=True, batch_size=50)
@@ -20,6 +21,12 @@ cap.set(cv2.CAP_PROP_FPS, 60)
 
 # define driver agent
 driver = Idle()
+
+# initialize metrics
+met = Metrics(n_points=20)
+met.add_metric('loop time', 'ms')
+met.add_metric('speed', 'm/s')
+met.interval = 5.0
 
 def main():
     # init last time
@@ -52,6 +59,11 @@ def main():
         last_time = time.time()
         log.log_performance(dt*1000) # save as milliseconds
 
+        # update metrics
+        met.update_metric('loop time', dt*1000)
+        met.update_metric('speed', driver.car.speed)
+        met.plot_metrics(last_time)
+        web_server.set_image(met.img, 'graph')
 
 
 

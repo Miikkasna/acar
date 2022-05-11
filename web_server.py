@@ -4,7 +4,8 @@ import numpy as np
 import threading
 from datetime import datetime
 
-images = {'video': np.zeros([400,400,3],dtype=np.uint8), 'graph': np.zeros([400,400,3],dtype=np.uint8)}
+blank = np.zeros([400,400,3],dtype=np.uint8)
+images = {'video': blank.copy(), 'graph': blank.copy()}
 app = Flask(__name__)
 
 @app.route("/")
