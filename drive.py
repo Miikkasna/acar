@@ -22,8 +22,9 @@ cap.set(cv2.CAP_PROP_FPS, 60)
 # define driver agent
 driver = Idle()
 
-# define minimum loop time
-min_loop_time = 0.120
+# define minimum intervals
+min_loop_time = 0.080
+min_plot_time = 0.950 # align with dashboard.html interval
 
 # initialize metrics
 met = Metrics(n_points=20)
@@ -33,6 +34,7 @@ met.add_metric('speed', 'm/s', 'line', (0, 5))
 def main():
     # init last time
     last_time = time.time()
+    last_plot_time = time.time()
     dt = 0.02 # non zero initialization
     while True:
         time.sleep(0.03)
@@ -59,7 +61,9 @@ def main():
         # update metrics
         met.update_metric('loop time', dt*1000)
         met.update_metric('speed', driver.car.speed)
-        met.plot_metrics()
+        if (time.time()-last_plot_time) > min_plot_time:
+            met.plot_metrics()
+            last_plot_time = time.time()
         web_server.set_image(met.json_charts, 'charts')
 
         # log delta time
