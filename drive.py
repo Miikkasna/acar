@@ -22,9 +22,12 @@ cap.set(cv2.CAP_PROP_FPS, 60)
 # define driver agent
 driver = Idle()
 
+# define minimum loop time
+min_loop_time = 0.120
+
 # initialize metrics
 met = Metrics(n_points=20)
-met.add_metric('loop time', 'ms', 'line', (0, 500), constant={'name':'Min loop time', 'value':100})
+met.add_metric('loop time', 'ms', 'line', (0, 500), constant={'name':'Min loop time', 'value':min_loop_time*1000})
 met.add_metric('speed', 'm/s', 'line', (0, 5))
 
 def main():
@@ -53,17 +56,19 @@ def main():
         driver.steer(steering)
         driver.throttle(throttle)
         
-        # log delta time
-        dt = (time.time()-last_time)
-        last_time = time.time()
-        log.log_performance(dt*1000) # save as milliseconds
-
         # update metrics
         met.update_metric('loop time', dt*1000)
         met.update_metric('speed', driver.car.speed)
         met.plot_metrics()
         web_server.set_image(met.json_charts, 'charts')
 
+        # log delta time
+        dt = (time.time()-last_time)
+        log.log_performance(dt*1000) # save as milliseconds
+
+        while (time.time()-last_time) < min_loop_time:
+            pass
+        last_time = time.time()
 
 
 if __name__ == "__main__":
