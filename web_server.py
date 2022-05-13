@@ -4,8 +4,9 @@ import numpy as np
 import threading
 from datetime import datetime
 
+
 blank = np.zeros([400,400,3],dtype=np.uint8)
-images = {'video': blank.copy(), 'graph': blank.copy()}
+images = {'video': blank.copy(), 'charts': None}
 app = Flask(__name__)
 
 @app.route("/")
@@ -21,13 +22,18 @@ def img_to_bytes(img):
 def get_image(stream):
     while True:
         yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + img_to_bytes(images[stream]) + b'\r\n')
+
 @app.route("/stream")
 def stream():
     return Response(get_image('video'), mimetype="multipart/x-mixed-replace; boundary=frame")
 
-@app.route("/dashboard")
+@app.route("/chart_data")
+def chart_data():
+    return Response(images['charts'], mimetype='text/json')
+
+@app.route('/dashboard')   
 def dashboard():
-    return Response(get_image('graph'), mimetype="multipart/x-mixed-replace; boundary=frame")
+    return render_template('dashboard.html')
 
 @app.route("/snap_shot", methods=['GET', 'POST'])
 def snap_shot():

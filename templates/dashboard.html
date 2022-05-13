@@ -1,0 +1,33 @@
+><body onload="JavaScript:init();">
+   <script>
+      function init() {
+         var canvas = document.getElementById("c1");
+         var context = canvas.getContext("2d");
+         img = new Image();
+         img.onload = function() {
+            canvas.setAttribute("width", 500)
+            canvas.setAttribute("height", 500)
+            context.drawImage(this, 0, 0);
+         };
+         var canvas2 = document.getElementById("c2");
+         var context2 = canvas2.getContext("2d");
+         img2 = new Image();
+         img2.onload = function() {
+            canvas2.setAttribute("width", 500)
+            canvas2.setAttribute("height", 500)
+            context2.drawImage(this, 0, 0);
+         };
+         refresh();
+      }
+       setInterval(() => {
+           fetch("{{ url_for('chart_data') }}")
+           .then(response => {
+               response.text().then(d => {var js = JSON.parse(d); img.src = js.c1; img2.src = js.c2})
+               });
+           }, 1000); 
+   </script>
+
+  <canvas id="c1"></canvas>
+   <canvas id="c2"></canvas>
+
+   </body>
