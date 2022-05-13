@@ -24,8 +24,8 @@ driver = Idle()
 
 # initialize metrics
 met = Metrics(n_points=20)
-met.add_metric('loop time', 'ms', 'line')
-met.add_metric('speed', 'm/s', 'line')
+met.add_metric('loop time', 'ms', 'line', (0, 500), constant={'name':'Min loop time', 'value':100})
+met.add_metric('speed', 'm/s', 'line', (0, 5))
 
 def main():
     # init last time
@@ -61,7 +61,7 @@ def main():
         # update metrics
         met.update_metric('loop time', dt*1000)
         met.update_metric('speed', driver.car.speed)
-
+        met.plot_metrics()
         web_server.set_image(met.json_charts, 'charts')
 
 

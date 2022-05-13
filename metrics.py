@@ -7,13 +7,12 @@ class Metrics:
         self.metrics = dict()
         self.n = n_points
         self.keys = []
-        self.img = None
         self.json_charts = None
     
-    def add_metric(self, name, unit, ctype, constant=None):
+    def add_metric(self, name, unit, ctype, ylim, constant=None):
         self.keys.append(name)
         data = np.zeros(self.n)
-        self.metrics[name] = {'unit': unit, 'data': data, 'chart_type':ctype, 'constant': constant}
+        self.metrics[name] = {'unit': unit, 'data': data, 'chart_type':ctype, 'ylim':ylim, 'constant': constant}
 
     def update_metric(self, name, value):
         data = np.roll(self.metrics[name]['data'], -1)
@@ -24,15 +23,15 @@ class Metrics:
         charts = dict()
         for i, key in enumerate(self.keys):
             if self.metrics[key]['chart_type'] == 'line':
-                chart = pygal.Line(height=500,include_x_axis=False,label_font_size=4,
-                    title_font_size=26,x_title='semaines',y_title='taux_debit',legend_at_bottom=True,x_label_rotation=90)
+                chart = pygal.Line(range=(self.metrics[key]['ylim']), height=500,include_x_axis=False,label_font_size=4,
+                    title_font_size=26,x_title='time',y_title=self.metrics[key]['unit'],legend_at_bottom=True,x_label_rotation=90)
                 chart._title = key
-                chart._y_title = self.metrics[key]['unit']
                 chart.add(key, self.metrics[key]['data'])
                 if self.metrics[key]['constant'] is not None:
-                    chart.add('constant', self.metrics[key]['constant'])
-                chart.render_data_uri()
-                charts['c' + i] = chart
-            self.json_charts = json.dumps(charts, indent = 4)
+                    constant = np.ones_like(self.metrics[key]['data'])*self.metrics[key]['constant']['value']
+                    chart.add(self.metrics[key]['constant']['name'], constant)
+                bchart = chart.render_data_uri()
+                charts['c{}'.format(i+1)] = bchart
+        self.json_charts = json.dumps(charts, indent = 4)
 
 
