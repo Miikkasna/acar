@@ -4,10 +4,11 @@ import cv2
 from logger import DB_logger
 import numpy as np
 from flask import Flask, Response, send_file
-from drive_control import Idle, GamePad
+from drive_control import Idle, GamePad, map
 import web_server
 import image_process as ip
 from metrics import Metrics
+
 
 # set up database logger
 log = DB_logger(batch=True, batch_size=50)
@@ -52,6 +53,7 @@ def main():
 
         # calculate inputs
         driver.calc_inputs(dt)
+        battery_charge = map(driver.car.battery_voltage, 4.6, 8.4, 0, 100)
 
         # set driving parameters
         steering = driver.get_steering()
@@ -62,7 +64,7 @@ def main():
         # update metrics
         met.update_metric('loop time', dt*1000)
         met.update_metric('speed', driver.car.speed)
-        met.update_metric('battery', driver.car.battery_charge)
+        met.update_metric('battery', battery_charge)
         if (time.time()-last_plot_time) > min_plot_time:
             met.plot_metrics()
             last_plot_time = time.time()

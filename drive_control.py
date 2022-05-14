@@ -30,10 +30,10 @@ def map(x, in_min, in_max, out_min, out_max):
 
 class Car():
     def __init__(self):
-        self.speed = None
-        self.angle_offset = None
-        self.motor_current = None
-        self.battery_charge = None
+        self.speed = 0
+        self.angle_offset = 0
+        self.motor_current = 0
+        self.battery_voltage = 0
 
 class Driver():
     def __init__(self):
@@ -67,8 +67,7 @@ class Driver():
     def calc_inputs(self, dt):
         while ser.in_waiting > 0:
             data = ser.readline().decode('utf-8').rstrip().split(';')
-            battery_voltage = float(data[0])
-            self.car.battery_charge = map(battery_voltage, 4.6, 8.4, 0, 100)
+            self.car.battery_voltage = float(data[0])
             self.car.speed = data[1]
 
 
