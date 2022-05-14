@@ -5,7 +5,7 @@
          var context = canvas.getContext("2d");
          img = new Image();
          img.onload = function() {
-            canvas.setAttribute("width", 500)
+            canvas.setAttribute("width", 800)
             canvas.setAttribute("height", 500)
             context.drawImage(this, 0, 0);
          };
@@ -13,21 +13,39 @@
          var context2 = canvas2.getContext("2d");
          img2 = new Image();
          img2.onload = function() {
-            canvas2.setAttribute("width", 500)
+            canvas2.setAttribute("width", 800)
             canvas2.setAttribute("height", 500)
             context2.drawImage(this, 0, 0);
+         };
+         var canvas3 = document.getElementById("c3");
+         var context3 = canvas3.getContext("2d");
+         img3 = new Image();
+         img3.onload = function() {
+            canvas3.setAttribute("width", 800)
+            canvas3.setAttribute("height", 500)
+            context3.drawImage(this, 0, 0);
+         };
+         var canvas4 = document.getElementById("c4");
+         var context4 = canvas4.getContext("2d");
+         img4 = new Image();
+         img4.onload = function() {
+            canvas4.setAttribute("width", 800)
+            canvas4.setAttribute("height", 500)
+            context4.drawImage(this, 0, 0);
          };
          refresh();
       }
        setInterval(() => {
            fetch("{{ url_for('chart_data') }}")
            .then(response => {
-               response.text().then(d => {var js = JSON.parse(d); img.src = js.c1; img2.src = js.c2})
-               });
+               response.text().then(d => {var js = JSON.parse(d); img.src = js.c1; img2.src = js.c2, img3.src = js.c3, img4.src = js.c4})
+               })
            }, 1000); 
    </script>
 
-  <canvas id="c1"></canvas>
+   <canvas id="c1"></canvas>
    <canvas id="c2"></canvas>
-
+   <br>
+   <canvas id="c3"></canvas>
+   <canvas id="c4"></canvas>
    </body>

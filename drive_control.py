@@ -1,13 +1,13 @@
 import RPi.GPIO as GPIO
 import xbox
 import time
+import serial
 
 # setup GPIO
 GPIO.setwarnings(False)			#disable warnings
 GPIO.setmode(GPIO.BOARD)		#set pin numbering system
 
 # define GPIO board pins
-enc_pin = 15
 servo_pin = 16			# PWM pin connected
 mcu_pin = 18		# PWM pin connected
 
@@ -20,14 +20,9 @@ GPIO.setup(mcu_pin,GPIO.OUT)
 mcu_pwm = GPIO.PWM(mcu_pin,pwm_freq)		#create PWM instance with frequency
 mcu_pwm.start(0)				#start PWM of required Duty Cycle 
 
-# define encoder interrupt event
-GPIO.setup(enc_pin, GPIO.IN)
-counter = 0
-def rotation_decode(enc_pin):
-    global counter
-    if GPIO.input(enc_pin)==1:
-        counter += 1
-GPIO.add_event_detect(enc_pin, GPIO.RISING, callback=rotation_decode)
+# initialize serial
+ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=0.01)
+ser.reset_input_buffer()
 
 def map(x, in_min, in_max, out_min, out_max):
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
@@ -70,10 +65,11 @@ class Driver():
         self.set_mcu(dc)
 
     def calc_inputs(self, dt):
-        global counter
-        distance = counter/357.0 # calibrated as meters
-        self.car.speed = distance / dt
-        counter = 0
+        while ser.in_waiting > 0:
+            data = ser.readline().decode('utf-8').rstrip().split(';')
+            battery_voltage = float(data[0])
+            self.car.battery_charge = map(battery_voltage, 4.6, 8.4, 0, 100)
+            self.car.speed = data[1]
 
 
 class GamePad(Driver):

@@ -30,6 +30,7 @@ min_plot_time = 0.950 # align with dashboard.html interval
 met = Metrics(n_points=20)
 met.add_metric('loop time', 'ms', 'line', (0, 500), constant={'name':'Min loop time', 'value':min_loop_time*1000})
 met.add_metric('speed', 'm/s', 'line', (0, 5))
+met.add_metric('battery', '%', 'stackbar', (0, 100), constant={'name':'Risk zone', 'value':20})
 
 def main():
     # init last time
@@ -61,10 +62,11 @@ def main():
         # update metrics
         met.update_metric('loop time', dt*1000)
         met.update_metric('speed', driver.car.speed)
+        met.update_metric('battery', driver.car.battery_charge)
         if (time.time()-last_plot_time) > min_plot_time:
             met.plot_metrics()
             last_plot_time = time.time()
-        web_server.set_image(met.json_charts, 'charts')
+            web_server.set_image(met.json_charts, 'charts')
 
         # log delta time
         dt = (time.time()-last_time)
