@@ -1,14 +1,15 @@
-import numpy
-import time
+import time, sys
 import cv2
 from logger import DB_logger
 import numpy as np
-from flask import Flask, Response, send_file
+import urllib.request
 from drive_control import Idle, GamePad, map
 import web_server
 import image_process as ip
 from metrics import Metrics
 
+# define connection check variable
+connection_check = True
 
 # set up database logger
 log = DB_logger(batch=True, batch_size=50)
@@ -78,6 +79,24 @@ def main():
             pass
         last_time = time.time()
 
+        # connection check
+        if connection_check:
+            if (time.time() - web_server.stamp) > 3.5:
+                raise Exception('connection not verified')
+0
+def shutdown():
+    try:
+        contents = urllib.request.urlopen("http://localhost:5000/shutdown").read()
+    except:
+        print("Server closed")
+    sys.exit(0)
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt as e:
+        print(e)
+        shutdown()
+    except Exception as e:
+        print(e)
+        shutdown()
