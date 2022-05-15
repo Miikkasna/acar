@@ -18,7 +18,13 @@ app.logger.disabled = True
 
 @app.route("/")
 def index():
-    return "Welcome to Acar web server"
+    html = '''<h2>Welcome to Acar web server</h2><br>
+    <a href=/stream>stream</a><br>
+    <a href=/dashboard>dashboard</a><br>
+    <a href=/snap_shot>snap_shot</a><br>
+    <a href=/connection>connection</a><br>
+    '''
+    return html
 
 def set_image(img, stream):
     images[stream] = img
