@@ -12,7 +12,7 @@ from metrics import Metrics
 connection_check = True
 
 # set up database logger
-log = DB_logger(batch=True, batch_size=50)
+log = DB_logger(batch=False, batch_size=50)
 log.set_new_testcase()
 
 # define camera
@@ -71,9 +71,14 @@ def main():
             last_plot_time = time.time()
             web_server.set_image(met.json_charts, 'charts')
 
-        # log delta time
+        # log run time data
         dt = (time.time()-last_time)
-        log.log_performance(dt*1000) # save as milliseconds
+        log.log_data(loop_time=dt*1000, 
+            battery_voltage=driver.car.battery_voltage,
+            distance=0,
+            speed=driver.car.speed,
+            throttle=throttle
+        ) # save as milliseconds
 
         while (time.time()-last_time) < min_loop_time:
             pass
@@ -83,13 +88,13 @@ def main():
         if connection_check:
             if (time.time() - web_server.stamp) > 3.5:
                 raise Exception('connection not verified')
-0
+
 def shutdown():
     try:
         contents = urllib.request.urlopen("http://localhost:5000/shutdown").read()
     except:
         print("Server closed")
-    sys.exit(0)
+    raise Exception('Shutdown')
 
 if __name__ == "__main__":
     try:

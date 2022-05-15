@@ -15,10 +15,11 @@ class DB_logger():
         self.cur = self.con.cursor()
         self.batch_size=batch_size
         self.batch = batch
-        self.test_intervals = []
+        self.data = []
 
-    def create_performance_table(self):
-        self.cur.execute('''CREATE TABLE performance (testcase INTEGER, iid int NOT NULL AUTO_INCREMENT PRIMARY KEY, ms INTEGER)''')
+    def create_data_table(self):
+        self.cur.execute('''CREATE TABLE data (testcase INTEGER, iid int NOT NULL AUTO_INCREMENT PRIMARY KEY, 
+            loop_time INTEGER, speed REAL, distance REAL, battery_voltage REAL, angle_offset REAL, steering REAL, throttle REAL)''')
         self.con.commit()
 
     def create_testcases_table(self):
@@ -32,21 +33,14 @@ class DB_logger():
         self.testcase_id, self.test_stamp = self.cur.fetchone()
         print('testcase: ', self.testcase_id)
 
-    def log_performance(self, interval):
+    def log_data(self, loop_time=None, speed=None, distance=None, battery_voltage=None, angle_offset=None, steering=None, throttle=None):
         if self.batch:
-            self.test_intervals.append( (self.testcase_id, interval) )
-            if len(self.test_intervals)==self.batch_size:
-                self.cur.executemany('''INSERT INTO performance (testcase, ms) VALUES (%s, %s)''', self.test_intervals)
-                self.test_intervals = []
+            self.data.append( (self.testcase_id, loop_time, speed, distance, battery_voltage, angle_offset, steering, throttle) )
+            if len(self.data)==self.batch_size:
+                self.cur.executemany('''INSERT INTO data (testcase, loop_time, speed, distance, battery_voltage, angle_offset, steering, throttle) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)''', self.data)
+                self.data = []
         else:
-            test_interval = (self.testcase_id, interval)
-            self.cur.execute('''INSERT INTO performance (testcase, ms) VALUES (%s, %s)''', test_interval)
+            data = (self.testcase_id, loop_time, speed, distance, battery_voltage, angle_offset, steering, throttle)
+            self.cur.execute('''INSERT INTO data (testcase, loop_time, speed, distance, battery_voltage, angle_offset, steering, throttle) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)''', data)
         self.con.commit()
 
-    def get_performances(self, limit=None):
-        if limit is None:
-            self.cur.execute('''SELECT ms FROM performance WHERE testcase = {}'''.format(self.testcase_id))
-        else:
-            self.cur.execute('''SELECT ms FROM performance WHERE testcase = {} ORDER BY  LIMIT {}'''.format(self.testcase_id, limit))
-        rows = self.cur.fetchall()
-        return rows
