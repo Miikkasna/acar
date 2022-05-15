@@ -43,7 +43,7 @@ class Driver():
         Driver.__init__(self)
 
     def calc_pulse_width(self, control):
-        return map(control, -1, 1, 950e-6, 2000e-6)
+        return map(control, -1, 1, 950e-6, 1900e-6)
 
     def calc_duty_cycle(self, pulse_width):
         T = 1/pwm_freq
