@@ -34,7 +34,7 @@ class Metrics:
                     title_font_size=26,y_title=self.metrics[key]['unit'],legend_at_bottom=True,x_label_rotation=90)
                 chart.add(key, self.metrics[key]['data'])
             elif self.metrics[key]['chart_type'] == 'stackbar':
-                chart = pygal.StackedBar(range=(self.metrics[key]['ylim']), height=500,include_x_axis=False,label_font_size=4,
+                chart = pygal.StackedBar(range=(self.metrics[key]['ylim']), height=500, width=300, include_x_axis=False,label_font_size=4,
                     title_font_size=26,y_title=self.metrics[key]['unit'],legend_at_bottom=False,x_label_rotation=90)
                 if self.metrics[key]['constant'] is not None:
                     constant = self.metrics[key]['constant']['value']
