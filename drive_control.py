@@ -31,6 +31,7 @@ def map(x, in_min, in_max, out_min, out_max):
 class Car():
     def __init__(self):
         self.speed = 0
+        self.distance = 0
         self.angle_offset = 0
         self.motor_current = 0
         self.battery_voltage = 0
@@ -68,7 +69,8 @@ class Driver():
         while ser.in_waiting > 0:
             data = ser.readline().decode('utf-8').rstrip().split(';')
             self.car.battery_voltage = float(data[0])
-            self.car.speed = data[1]
+            self.car.speed = float(data[1])
+        self.car.distance += self.car.speed*dt
 
 
 class GamePad(Driver):

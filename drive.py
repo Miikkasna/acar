@@ -9,7 +9,7 @@ import image_process as ip
 from metrics import Metrics
 
 # define connection check variable
-connection_check = True
+connection_check = False
 
 # set up database logger
 log = DB_logger(batch=False, batch_size=50)
@@ -32,13 +32,14 @@ min_plot_time = 0.950 # align with dashboard.html interval
 met = Metrics(n_points=20)
 met.add_metric('loop time', 'ms', 'line', (0, 500), constant={'name':'Min loop time', 'value':min_loop_time*1000})
 met.add_metric('speed', 'm/s', 'line', (0, 5))
+met.add_metric('distance', 'm', 'bar', (0, 5))
 met.add_metric('battery', '%', 'stackbar', (0, 100), constant={'name':'Risk zone', 'value':20})
 
 def main():
     # init last time
     last_time = time.time()
     last_plot_time = time.time()
-    dt = 0.02 # non zero initialization
+    dt = 1.0 # non zero initialization
     while True:
         time.sleep(0.03)
 
@@ -65,6 +66,7 @@ def main():
         # update metrics
         met.update_metric('loop time', dt*1000)
         met.update_metric('speed', driver.car.speed)
+        met.update_metric('distance', driver.car.distance)
         met.update_metric('battery', battery_charge)
         if (time.time()-last_plot_time) > min_plot_time:
             met.plot_metrics()
