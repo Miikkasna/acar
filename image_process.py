@@ -16,14 +16,6 @@ pts2 = np.float32([
                     [115, 245]
                     ])
 
-# for parameters searching
-'''
-dir = 'testdrive3'
-img = cv2.imread('{}/{}.jpg'.format(dir, 0))
-for i in range(0, 543, 1):
-    img = cv2.imread('{}/{}.jpg'.format(dir, i))
-    process_image(img)
-'''
 def process_image(img, features=True):
     # define image shape and center
     h, w, _ = img.shape
@@ -50,7 +42,6 @@ def process_image(img, features=True):
     if circles is not None:
         circles = np.uint16(np.around(circles))[0,:2] # stake slice of best points
         for i, v in enumerate(circles):
-            #cv2.circle(mask, (v[0], v[1]), v[2], 255, -1)
             cv2.putText(mask, (1+i)*'|', (v[0], v[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1, cv2.LINE_AA)
         weights = [2, 1, 1, 1, 1][:circles.shape[0]]
         x = np.average(circles[:, 0], weights=weights)
@@ -66,9 +57,12 @@ def process_image(img, features=True):
     dx, dy = c - x, h - y
     angle = round(np.degrees(np.tan(dx/dy)), 1)
     cv2.putText(res, str(angle), (w-80,h-50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-    # Show result for testing:
-    #cv2.imshow('img', res)
-    #cv2.waitKey(80)
 
-    return res
+    # wrap extracted features
+    fts = {'direction_angle': angle}
+
+    if features:
+        return res, fts
+    else:
+        return res
 

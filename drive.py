@@ -3,7 +3,7 @@ import cv2
 from logger import DB_logger
 import numpy as np
 import urllib.request
-from drive_control import Idle, GamePad, map
+from drive_control import Idle, GamePad, AI, map
 import web_server
 import image_process as ip
 from metrics import Metrics
@@ -22,7 +22,7 @@ cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 280)
 cap.set(cv2.CAP_PROP_FPS, 60)
 
 # define driver agent
-driver = Idle()
+driver = AI()
 
 # define minimum intervals
 min_loop_time = 0.080
@@ -45,17 +45,20 @@ def main():
 
         # get camera frame
         ret, frame = cap.read()
-        #process image
+        #process image and get input features
         try:
-            res = ip.process_image(frame, features=False)
+            res, features = ip.process_image(frame, features=True)
         except:
-            res = frame
+            res, features = frame, dict()
         # update stream
         web_server.set_image(res, 'video')
 
         # calculate inputs
-        driver.calc_inputs(dt)
+        driver.calc_inputs(dt, features)
         battery_charge = map(driver.car.battery_voltage, 4.6, 8.4, 0, 100)
+
+        # set AI actions
+        driver.set_actions(features)
 
         # set driving parameters
         steering = driver.get_steering()

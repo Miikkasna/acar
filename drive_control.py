@@ -2,6 +2,8 @@ import RPi.GPIO as GPIO
 import xbox
 import time
 import serial
+from neural_netwok import NeuralNetwork
+import numpy as np
 
 # setup GPIO
 GPIO.setwarnings(False)			#disable warnings
@@ -32,13 +34,14 @@ class Car():
     def __init__(self):
         self.speed = 0
         self.distance = 0
-        self.angle_offset = 0
+        self.direction_angle = 0
         self.motor_current = 0
         self.battery_voltage = 0
 
 class Driver():
     def __init__(self):
         self.car = Car()
+        self.MAX_CURVE_ANGLE = 90
     def __init_subclass__(self):
         Driver.__init__(self)
 
@@ -65,12 +68,13 @@ class Driver():
         dc = self.calc_duty_cycle(pw)
         self.set_mcu(dc)
 
-    def calc_inputs(self, dt):
+    def calc_inputs(self, dt, features=None):
         while ser.in_waiting > 0:
             data = ser.readline().decode('utf-8').rstrip().split(';')
             self.car.battery_voltage = float(data[0])
             self.car.speed = float(data[1])
         self.car.distance += self.car.speed*dt
+        self.direction_angle = features['direction_angle']
 
 
 class GamePad(Driver):
@@ -95,3 +99,23 @@ class Idle(Driver):
 
     def get_throttle(self):
         return 0
+
+class AI(Driver):
+    def __init__(self):
+        n_inputs, n_outputs = 2, 2
+        self.agent = NeuralNetwork(n_inputs, [4], n_outputs)
+        self.agent.network = np.load('trained_agent.npy', allow_pickle=True)
+        self.action = np.zeros(n_outputs)
+
+    def set_actions(self):
+        inputs = [self.car.speed, self.car.direction_angle/self.MAX_CURVE_ANGLE]
+        output = self.agent.forward_propagate(inputs)
+        self.action = output
+
+    def get_steering(self):
+        steering = self.action[0]
+        return steering
+
+    def get_throttle(self):
+        throttle = self.action[1]
+        return throttle
