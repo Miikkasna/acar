@@ -49,28 +49,25 @@ def main():
         try:
             res, features = ip.process_image(frame, features=True)
         except:
-            res, features = frame, dict()
+            res, features = frame, {'direction_angle': 0}
         # update stream
         web_server.set_image(res, 'video')
 
         # calculate inputs
         driver.calc_inputs(dt, features)
-        battery_charge = map(driver.car.battery_voltage, 4.6, 8.4, 0, 100)
 
-        # set AI actions
-        driver.set_actions(features)
+        # set actions
+        driver.set_actions()
 
-        # set driving parameters
-        steering = driver.get_steering()
-        throttle = driver.get_throttle()
-        driver.steer(steering)
-        driver.throttle(throttle)
+        # execute actions
+        driver.steer()
+        driver.throttle()
         
         # update metrics
         met.update_metric('loop time', dt*1000)
         met.update_metric('speed', driver.car.speed)
         met.update_metric('distance', driver.car.distance)
-        met.update_metric('battery', battery_charge)
+        met.update_metric('battery', driver.car.battery_charge)
         if (time.time()-last_plot_time) > min_plot_time:
             met.plot_metrics()
             last_plot_time = time.time()
@@ -82,8 +79,8 @@ def main():
             battery_voltage=driver.car.battery_voltage,
             distance=0,
             speed=driver.car.speed,
-            throttle=throttle
-        ) # save as milliseconds
+            throttle=driver.car.throttle()
+        )
 
         while (time.time()-last_time) < min_loop_time:
             pass

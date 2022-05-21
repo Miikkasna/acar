@@ -37,6 +37,9 @@ class Car():
         self.direction_angle = 0
         self.motor_current = 0
         self.battery_voltage = 0
+        self.battery_charge = 0
+        self.throttle = 0
+        self.steering = 0
 
 class Driver():
     def __init__(self):
@@ -58,12 +61,14 @@ class Driver():
     def set_mcu(self, duty_cycle):
         mcu_pwm.ChangeDutyCycle(duty_cycle*100) #provide duty cycle in the range 0-100
 
-    def steer(self, control): # control; 0=middle, -1=full rigth 1=full left
+    def steer(self): # control; 0=middle, -1=full rigth 1=full left
+        control = self.car.steering
         pw = self.calc_pulse_width(control*(-1))
         dc = self.calc_duty_cycle(pw)
         self.set_servo(dc)
 
-    def throttle(self, control): # control; 0=neutral, -1=full reverse 1=full throttle
+    def throttle(self): # control; 0=neutral, -1=full reverse 1=full throttle
+        control = self.car.throttle
         pw = self.calc_pulse_width(control*(-1)) # switch polarization
         dc = self.calc_duty_cycle(pw)
         self.set_mcu(dc)
@@ -73,6 +78,7 @@ class Driver():
             data = ser.readline().decode('utf-8').rstrip().split(';')
             self.car.battery_voltage = float(data[0])
             self.car.speed = float(data[1])
+        self.car.battery_charge = map(self.car.battery_voltage, 4.6, 8.4, 0, 100)
         self.car.distance += self.car.speed*dt
         self.direction_angle = features['direction_angle']
 
@@ -82,40 +88,26 @@ class GamePad(Driver):
         self.joy = xbox.Joystick()
         print('GamePad selected')
 
-    def get_steering(self):
-        steering, _ = self.joy.leftStick()
-        return steering
-
-    def get_throttle(self):
-        _, throttle = self.joy.rightStick()
-        return throttle
+    def set_actions(self):
+        _, self.car.throttle = self.joy.rightStick()
+        self.car.steering, _ = self.joy.leftStick()
 
 class Idle(Driver):
     def __init__(self):
         print('Idle selected')
 
-    def get_steering(self):
-        return 0
-
-    def get_throttle(self):
-        return 0
+    def set_actions(self):
+        self.car.throttle = 0
+        self.car.steering = 0
 
 class AI(Driver):
     def __init__(self):
         n_inputs, n_outputs = 2, 2
         self.agent = NeuralNetwork(n_inputs, [4], n_outputs)
         self.agent.network = np.load('trained_agent.npy', allow_pickle=True)
-        self.action = np.zeros(n_outputs)
 
     def set_actions(self):
         inputs = [self.car.speed, self.car.direction_angle/self.MAX_CURVE_ANGLE]
         output = self.agent.forward_propagate(inputs)
-        self.action = output
-
-    def get_steering(self):
-        steering = self.action[0]
-        return steering
-
-    def get_throttle(self):
-        throttle = self.action[1]
-        return throttle
+        self.car.steering = output[0]
+        self.car.throttle = output[1]
