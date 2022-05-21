@@ -44,12 +44,13 @@ class Car():
 class Driver():
     def __init__(self):
         self.car = Car()
-        self.MAX_CURVE_ANGLE = 90
+        self.MAX_CURVE_ANGLE = 60
+
     def __init_subclass__(self):
         Driver.__init__(self)
 
     def calc_pulse_width(self, control):
-        return map(control, -1, 1, 950e-6, 1900e-6)
+        return map(control, -1, 1, 950e-6, 1950e-6)
 
     def calc_duty_cycle(self, pulse_width):
         T = 1/pwm_freq
@@ -67,6 +68,9 @@ class Driver():
         dc = self.calc_duty_cycle(pw)
         self.set_servo(dc)
 
+    def stop_motor(self):
+        mcu_pwm.start(0)
+
     def throttle(self): # control; 0=neutral, -1=full reverse 1=full throttle
         control = self.car.throttle
         pw = self.calc_pulse_width(control*(-1)) # switch polarization
@@ -80,7 +84,7 @@ class Driver():
             self.car.speed = float(data[1])
         self.car.battery_charge = map(self.car.battery_voltage, 4.6, 8.4, 0, 100)
         self.car.distance += self.car.speed*dt
-        self.direction_angle = features['direction_angle']
+        self.car.direction_angle = features['direction_angle']
 
 
 class GamePad(Driver):
@@ -102,12 +106,34 @@ class Idle(Driver):
 
 class AI(Driver):
     def __init__(self):
+        print('AI selected')
         n_inputs, n_outputs = 2, 2
         self.agent = NeuralNetwork(n_inputs, [4], n_outputs)
         self.agent.network = np.load('trained_agent.npy', allow_pickle=True)
+        self.speed_correction = 10.0
+        self.throttle_correction = 0.01
+        self.dir_switch = -1
 
     def set_actions(self):
-        inputs = [self.car.speed, self.car.direction_angle/self.MAX_CURVE_ANGLE]
+        def limit(val):
+            if val > 1.0:
+                return 1.0
+            elif val < -1.0:
+                return -1.0
+            else:
+                return val
+        inputs = [self.car.speed*self.speed_correction, self.dir_switch*self.car.direction_angle/self.MAX_CURVE_ANGLE]
         output = self.agent.forward_propagate(inputs)
-        self.car.steering = output[0]
-        self.car.throttle = output[1]
+        
+        self.car.steering = limit(float(output[0]))
+        self.car.throttle = limit(float(output[1]*self.throttle_correction))
+
+class DumDum(Driver):
+    def __init__(self):
+        print('DumDum selected')
+
+    def set_actions(self):
+        self.car.throttle = 0.04
+        self.car.steering = -self.car.direction_angle/self.MAX_CURVE_ANGLE
+        if abs(self.car.steering) > 1.0:
+            self.car.steering = self.car.steering/abs(self.car.steering)

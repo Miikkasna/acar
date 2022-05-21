@@ -3,7 +3,7 @@ import cv2
 from logger import DB_logger
 import numpy as np
 import urllib.request
-from drive_control import Idle, GamePad, AI, map
+from drive_control import Idle, GamePad, AI, DumDum
 import web_server
 import image_process as ip
 from metrics import Metrics
@@ -22,17 +22,18 @@ cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 280)
 cap.set(cv2.CAP_PROP_FPS, 60)
 
 # define driver agent
-driver = AI()
+driver = DumDum()
 
-# define minimum intervals
-min_loop_time = 0.080
+# define limits
+min_loop_time = 0.1
 min_plot_time = 0.950 # align with dashboard.html interval
+speed_limit = 0.05 # m/s
 
 # initialize metrics
 met = Metrics(n_points=20)
 met.add_metric('loop time', 'ms', 'line', (0, 500), constant={'name':'Min loop time', 'value':min_loop_time*1000})
 met.add_metric('speed', 'm/s', 'line', (0, 5))
-met.add_metric('distance', 'm', 'bar', (0, 5))
+met.add_metric('distance', 'm', 'bar', (0, 20))
 met.add_metric('battery', '%', 'stackbar', (0, 100), constant={'name':'Risk zone', 'value':20})
 
 def main():
@@ -62,6 +63,10 @@ def main():
         # execute actions
         driver.steer()
         driver.throttle()
+
+        # limit speed
+        if driver.car.speed > speed_limit:
+            driver.stop_motor()
         
         # update metrics
         met.update_metric('loop time', dt*1000)
@@ -79,7 +84,7 @@ def main():
             battery_voltage=driver.car.battery_voltage,
             distance=0,
             speed=driver.car.speed,
-            throttle=driver.car.throttle()
+            throttle=driver.car.throttle
         )
 
         while (time.time()-last_time) < min_loop_time:
