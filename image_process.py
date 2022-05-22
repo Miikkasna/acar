@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 import cv2
 import math
@@ -16,7 +17,7 @@ pts2 = np.float32([
                     [115, 245]
                     ])
 
-def process_image(img, features=True):
+def process_image(img, features=True, anchors=2):
     # define image shape and center
     h, w, _ = img.shape
     c = int(w/2)
@@ -27,9 +28,9 @@ def process_image(img, features=True):
 
     blur = 7
     blurred = cv2.medianBlur(warped, blur) #cv2.bilateralFilter(gray,10,50,50)
-    minDist = 110
+    minDist = 80
     param1 = 30 #500
-    param2 = 8 #200 #smaller value-> more false circles
+    param2 = 9 #200 #smaller value-> more false circles
     minRadius = 6
     maxRadius = 8 #10
 
@@ -40,7 +41,7 @@ def process_image(img, features=True):
     x, y = c, 1
     target = (x, y)
     if circles is not None:
-        circles = np.uint16(np.around(circles))[0,:2] # stake slice of best points
+        circles = np.uint16(np.around(circles))[0,:anchors] # stake slice of best points
         for i, v in enumerate(circles):
             cv2.putText(mask, (1+i)*'|', (v[0], v[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1, cv2.LINE_AA)
         weights = [2, 1, 1, 1, 1][:circles.shape[0]]
@@ -49,14 +50,15 @@ def process_image(img, features=True):
         target = (int(x), int(y))
         mask = cv2.warpPerspective(mask, M, (cols, rows))
         res = cv2.bitwise_not(img,img,mask = mask)
-        cv2.arrowedLine(res, (c, h), target, (0, 200, 0), thickness=1)
-        cv2.putText(res, 'points: {}'.format(circles.shape[1]), (10,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+        cv2.arrowedLine(res, (c, h), target, (0, 200, 0), thickness=2)
+        #cv2.putText(res, 'points: {}'.format(circles.shape[1]), (10,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
     else:
         res = img
-        cv2.putText(res, 'points: 0', (10,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+        #cv2.putText(res, 'points: 0', (10,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
     dx, dy = c - x, h - y
-    angle = round(np.degrees(np.tan(dx/dy)), 1)
-    cv2.putText(res, str(angle), (w-80,h-50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+    angle = round(np.degrees(np.tan(dx/(dy+1))), 1)
+    if abs(angle) > 90: angle = 1
+    #cv2.putText(res, str(angle), (w-80,h-50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
 
     # wrap extracted features
     fts = {'direction_angle': angle}

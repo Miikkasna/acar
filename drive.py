@@ -19,14 +19,17 @@ log.set_new_testcase()
 cap = cv2.VideoCapture(0)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 280)
-cap.set(cv2.CAP_PROP_FPS, 60)
+cap.set(cv2.CAP_PROP_FPS, 30)
 
 # define driver agent
-driver = DumDum()
+driver = AI()
+
+# define number of anchor points
+anchors = 3
 
 # define limits
-min_loop_time = 0.1
-min_plot_time = 0.950 # align with dashboard.html interval
+min_loop_time = 0.04 # s
+min_plot_time = 1.5 # s, align with dashboard.html interval
 speed_limit = 0.05 # m/s
 
 # initialize metrics
@@ -42,13 +45,11 @@ def main():
     last_plot_time = time.time()
     dt = 1.0 # non zero initialization
     while True:
-        time.sleep(0.03)
-
         # get camera frame
         ret, frame = cap.read()
         #process image and get input features
         try:
-            res, features = ip.process_image(frame, features=True)
+            res, features = ip.process_image(frame, features=True, anchors=anchors)
         except:
             res, features = frame, {'direction_angle': 0}
         # update stream
@@ -66,7 +67,7 @@ def main():
 
         # limit speed
         if driver.car.speed > speed_limit:
-            #driver.stop_motors()
+            driver.stop_motor()
             pass
         
         # update metrics
@@ -98,6 +99,7 @@ def main():
                 raise Exception('connection not verified')
 
 def shutdown():
+    driver.stop_motor()
     try:
         contents = urllib.request.urlopen("http://localhost:5000/shutdown").read()
     except:

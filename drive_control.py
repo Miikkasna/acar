@@ -46,6 +46,7 @@ class Driver():
     def __init__(self):
         self.car = Car()
         self.MAX_CURVE_ANGLE = 60
+        self.LIMIT_CONTROL = 0.6 # %
 
     def __init_subclass__(self):
         Driver.__init__(self)
@@ -54,15 +55,13 @@ class Driver():
         return map(control, -1, 1, 1000, 2000)
 
     def calc_duty_cycle(self, pulse_width):
-        T = 1.000/pwm_freq
+        T = 1.00000/float(pwm_freq)
         return int(pulse_width/T)
 
     def set_servo(self, duty_cycle):
-        #gpio.set_servo_pulsewidth(servo_pin, pulse_width)
         gpio.hardware_PWM(servo_pin, pwm_freq, duty_cycle)
 
     def set_mcu(self, duty_cycle):
-        #gpio.set_servo_pulsewidth(mcu_pin, pulse_width)
         gpio.hardware_PWM(mcu_pin, pwm_freq, duty_cycle)
 
     def steer(self): # control; 0=middle, -1=full rigth 1=full left
@@ -71,8 +70,8 @@ class Driver():
         dc = self.calc_duty_cycle(pw)
         self.set_servo(dc)
 
-    def stop_motors(self):
-        gpio.stop()
+    def stop_motor(self):
+        gpio.hardware_PWM(mcu_pin, pwm_freq, 0)
 
     def throttle(self): # control; 0=neutral, -1=full reverse 1=full throttle
         control = self.car.throttle
@@ -89,6 +88,14 @@ class Driver():
         self.car.distance += self.car.speed*dt
         self.car.direction_angle = features['direction_angle']
 
+    def limit(self, val):
+        lim = self.LIMIT_CONTROL
+        if val > lim:
+            return lim
+        elif val < -lim:
+            return -lim
+        else:
+            return val
 
 class GamePad(Driver):
     def __init__(self):
@@ -113,30 +120,23 @@ class AI(Driver):
         n_inputs, n_outputs = 2, 2
         self.agent = NeuralNetwork(n_inputs, [4], n_outputs)
         self.agent.network = np.load('trained_agent.npy', allow_pickle=True)
-        self.speed_correction = 10.0
-        self.throttle_correction = 0.01
-        self.dir_switch = -1
+        self.speed_correction = 4.0
+        self.throttle_correction = 0.15
+        self.dir_switch = 1
 
     def set_actions(self):
-        def limit(val):
-            if val > 1.0:
-                return 1.0
-            elif val < -1.0:
-                return -1.0
-            else:
-                return val
-        inputs = [self.car.speed*self.speed_correction, self.dir_switch*self.car.direction_angle/self.MAX_CURVE_ANGLE]
+        angle = self.dir_switch*self.car.direction_angle/self.MAX_CURVE_ANGLE
+        speed = self.car.speed*self.speed_correction
+        inputs = [speed, angle]
         output = self.agent.forward_propagate(inputs)
-        
-        self.car.steering = limit(float(output[0]))
-        self.car.throttle = limit(float(output[1]*self.throttle_correction))
+
+        self.car.steering = self.limit(float(output[0]))
+        self.car.throttle = self.limit(float(output[1]*self.throttle_correction))
 
 class DumDum(Driver):
     def __init__(self):
         print('DumDum selected')
 
     def set_actions(self):
-        self.car.throttle = 0.05
-        self.car.steering = 0#-self.car.direction_angle/self.MAX_CURVE_ANGLE
-        if abs(self.car.steering) > 1.0:
-            self.car.steering = self.car.steering/abs(self.car.steering)
+        self.car.throttle = 0.03
+        self.car.steering = self.limit(-self.car.direction_angle/self.MAX_CURVE_ANGLE)
