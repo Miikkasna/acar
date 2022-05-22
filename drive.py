@@ -66,7 +66,8 @@ def main():
 
         # limit speed
         if driver.car.speed > speed_limit:
-            driver.stop_motor()
+            #driver.stop_motors()
+            pass
         
         # update metrics
         met.update_metric('loop time', dt*1000)

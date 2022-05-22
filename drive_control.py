@@ -1,26 +1,27 @@
-import RPi.GPIO as GPIO
+import pigpio
 import xbox
 import time
 import serial
 from neural_netwok import NeuralNetwork
 import numpy as np
 
-# setup GPIO
-GPIO.setwarnings(False)			#disable warnings
-GPIO.setmode(GPIO.BOARD)		#set pin numbering system
 
 # define GPIO board pins
-servo_pin = 16			# PWM pin connected
-mcu_pin = 18		# PWM pin connected
+servo_pin = 12			# PWM pin connected
+mcu_pin = 13		# PWM pin connected
+
+# setup GPIO
+gpio = pigpio.pi()
+gpio.set_mode(servo_pin, pigpio.OUTPUT)
+gpio.set_mode(mcu_pin, pigpio.OUTPUT)
 
 # define PWM setup
-pwm_freq = 200
-GPIO.setup(servo_pin,GPIO.OUT)
-servo_pwm = GPIO.PWM(servo_pin,pwm_freq)		#create PWM instance with frequency
-servo_pwm.start(0)				#start PWM of required Duty Cycle
-GPIO.setup(mcu_pin,GPIO.OUT)
-mcu_pwm = GPIO.PWM(mcu_pin,pwm_freq)		#create PWM instance with frequency
-mcu_pwm.start(0)				#start PWM of required Duty Cycle 
+pwm_freq = 50
+gpio.set_PWM_frequency(servo_pin, pwm_freq)
+gpio.set_PWM_frequency(mcu_pin, pwm_freq)
+
+
+
 
 # initialize serial
 ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=0.01)
@@ -50,17 +51,19 @@ class Driver():
         Driver.__init__(self)
 
     def calc_pulse_width(self, control):
-        return map(control, -1, 1, 950e-6, 1950e-6)
+        return map(control, -1, 1, 1000, 2000)
 
     def calc_duty_cycle(self, pulse_width):
-        T = 1/pwm_freq
-        return pulse_width/T
+        T = 1.000/pwm_freq
+        return int(pulse_width/T)
 
     def set_servo(self, duty_cycle):
-        servo_pwm.ChangeDutyCycle(duty_cycle*100) #provide duty cycle in the range 0-100
+        #gpio.set_servo_pulsewidth(servo_pin, pulse_width)
+        gpio.hardware_PWM(servo_pin, pwm_freq, duty_cycle)
 
     def set_mcu(self, duty_cycle):
-        mcu_pwm.ChangeDutyCycle(duty_cycle*100) #provide duty cycle in the range 0-100
+        #gpio.set_servo_pulsewidth(mcu_pin, pulse_width)
+        gpio.hardware_PWM(mcu_pin, pwm_freq, duty_cycle)
 
     def steer(self): # control; 0=middle, -1=full rigth 1=full left
         control = self.car.steering
@@ -68,8 +71,8 @@ class Driver():
         dc = self.calc_duty_cycle(pw)
         self.set_servo(dc)
 
-    def stop_motor(self):
-        mcu_pwm.start(0)
+    def stop_motors(self):
+        gpio.stop()
 
     def throttle(self): # control; 0=neutral, -1=full reverse 1=full throttle
         control = self.car.throttle
@@ -133,7 +136,7 @@ class DumDum(Driver):
         print('DumDum selected')
 
     def set_actions(self):
-        self.car.throttle = 0.04
-        self.car.steering = -self.car.direction_angle/self.MAX_CURVE_ANGLE
+        self.car.throttle = 0.05
+        self.car.steering = 0#-self.car.direction_angle/self.MAX_CURVE_ANGLE
         if abs(self.car.steering) > 1.0:
             self.car.steering = self.car.steering/abs(self.car.steering)
