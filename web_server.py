@@ -4,6 +4,7 @@ import numpy as np
 import threading, os
 from datetime import datetime
 import logging, time
+import json
 
 # define connection check safety stamp
 stamp = time.time() + 10.0
@@ -42,7 +43,15 @@ def stream():
 
 @app.route("/chart_data")
 def chart_data():
-    return Response(images['charts'], mimetype='text/json')
+    data1, data2 = list(np.random.rand(11)*10), list(np.random.rand(11)*10)
+    data = {
+        'c1': [{'y': data1, 'type':'lines'}, {'y': data2, 'type':'bar'}],
+        'c2': [{'y': data2, 'type':'lines'}, {'y': data1, 'type':'bar'}]
+        
+        }
+    data = json.dumps(data, indent = 4)
+    return Response(data, mimetype='text/json')
+    #return Response(images['charts'], mimetype='text/json')
 
 @app.route('/dashboard')   
 def dashboard():

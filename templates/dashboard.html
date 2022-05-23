@@ -1,51 +1,37 @@
-<body onload="JavaScript:init();">
-   <script>
-      function init() {
-         var canvas = document.getElementById("c1");
-         var context = canvas.getContext("2d");
-         img = new Image();
-         img.onload = function() {
-            canvas.setAttribute("width", 800)
-            canvas.setAttribute("height", 500)
-            context.drawImage(this, 0, 0);
-         };
-         var canvas2 = document.getElementById("c2");
-         var context2 = canvas2.getContext("2d");
-         img2 = new Image();
-         img2.onload = function() {
-            canvas2.setAttribute("width", 800)
-            canvas2.setAttribute("height", 500)
-            context2.drawImage(this, 0, 0);
-         };
-         var canvas3 = document.getElementById("c3");
-         var context3 = canvas3.getContext("2d");
-         img3 = new Image();
-         img3.onload = function() {
-            canvas3.setAttribute("width", 800)
-            canvas3.setAttribute("height", 500)
-            context3.drawImage(this, 0, 0);
-         };
-         var canvas4 = document.getElementById("c4");
-         var context4 = canvas4.getContext("2d");
-         img4 = new Image();
-         img4.onload = function() {
-            canvas4.setAttribute("width", 800)
-            canvas4.setAttribute("height", 500)
-            context4.drawImage(this, 0, 0);
-         };
-         refresh();
-      }
-       setInterval(() => {
+<!DOCTYPE html>
+<html>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<body>
+<div id="c1" style="width:100%;max-width:700px"></div>
+<br>
+<div id="c2" style="width:100%;max-width:700px"></div>
+<script>
+
+
+// Define Layout
+var layout1 = {
+  xaxis: {title: "Time"},
+  yaxis: {range: [0, 10], title: "Unit"},  
+  title: "Title"
+};
+var layout2 = {
+  xaxis: {title: "Time"},
+  yaxis: {range: [0, 20], title: "Unit"},  
+  title: "Title"
+};
+setInterval(() => {
            fetch("{{ url_for('chart_data') }}")
            .then(response => {
-               response.text().then(d => {var js = JSON.parse(d); img.src = js.c1; img2.src = js.c2, img3.src = js.c3, img4.src = js.c4})
+               response.text().then(d => {
+                  var js = JSON.parse(d);
+                  var data = js.c1;
+                  Plotly.newPlot("c1", data, layout1);
+                  data = js.c2;
+                  Plotly.newPlot("c2", data, layout2);
+               })
                })
            }, 1000); 
-   </script>
+</script>
 
-   <canvas id="c1"></canvas>
-   <canvas id="c2"></canvas>
-   <br>
-   <canvas id="c3"></canvas>
-   <canvas id="c4"></canvas>
-   </body>
+</body>
+</html>
