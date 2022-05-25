@@ -33,11 +33,23 @@ min_plot_time = 1.5 # s, align with dashboard.html interval
 speed_limit = 0.05 # m/s
 
 # initialize metrics
-met = Metrics(n_points=20)
-met.add_metric('loop time', 'ms', 'line', (0, 500), constant={'name':'Min loop time', 'value':min_loop_time*1000})
-met.add_metric('speed', 'm/s', 'line', (0, 5))
-met.add_metric('distance', 'm', 'bar', (0, 20))
-met.add_metric('battery', '%', 'stackbar', (0, 100), constant={'name':'Risk zone', 'value':20})
+n_points = 20
+met = Metrics(n_points)
+# loop time
+met.add_metric('loop time', xaxis={'range':[0, n_points], 'title':'Time'}, yaxis={'range':[0, 1000], 'title':'ms'})
+met.add_series('loop time', 'real loop time', 'lines')
+met.add_series('loop time', 'min loop time', 'lines', constant=min_loop_time*1000)
+# speed
+met.add_metric('speed', xaxis={'range':[0, n_points], 'title':'Time'}, yaxis={'range':[0, 5], 'title':'m/s'})
+met.add_series('speed', 'current speed', 'lines')
+# distance
+met.add_metric('distance', xaxis={'range':[0, n_points], 'title':'Time'}, yaxis={'range':[0, 20], 'title':'m'})
+met.add_series('distance', 'cumulative distance', 'lines')
+# battery
+met.add_metric('battery', xaxis={'range':[n_points-1.5, n_points-0.5], 'title':'Time'}, yaxis={'range':[0, 100], 'title':'%'})
+met.add_series('battery', 'battery charge', 'bar')
+met.add_series('battery', 'Risk limit', 'lines', constant=20)
+
 
 def main():
     # init last time
@@ -53,7 +65,7 @@ def main():
         except:
             res, features = frame, {'direction_angle': 0}
         # update stream
-        web_server.set_image(res, 'video')
+        web_server.set_stream_data(res, 'video')
 
         # calculate inputs
         driver.calc_inputs(dt, features)
@@ -76,9 +88,9 @@ def main():
         met.update_metric('distance', driver.car.distance)
         met.update_metric('battery', driver.car.battery_charge)
         if (time.time()-last_plot_time) > min_plot_time:
-            met.plot_metrics()
+            met.update_chart_data()
             last_plot_time = time.time()
-            web_server.set_image(met.json_charts, 'charts')
+            web_server.set_stream_data(met.json_charts, 'charts')
 
         # log run time data
         dt = (time.time()-last_time)

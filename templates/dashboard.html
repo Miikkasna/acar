@@ -2,32 +2,27 @@
 <html>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <body>
-<div id="c1" style="width:100%;max-width:700px"></div>
+<div id="c1" style="width:600px;height:400px; float: left;"></div>
+<div id="c2" style="width:600px;height:400px;margin-left: 620px;"></div>
 <br>
-<div id="c2" style="width:100%;max-width:700px"></div>
+<div id="c3" style="width:600px;height:400px; float: left;"></div>
+<div id="c4" style="width:600px;height:400px;margin-left: 620px;"></div>
 <script>
 
-
-// Define Layout
-var layout1 = {
-  xaxis: {title: "Time"},
-  yaxis: {range: [0, 10], title: "Unit"},  
-  title: "Title"
-};
-var layout2 = {
-  xaxis: {title: "Time"},
-  yaxis: {range: [0, 20], title: "Unit"},  
-  title: "Title"
-};
 setInterval(() => {
            fetch("{{ url_for('chart_data') }}")
            .then(response => {
                response.text().then(d => {
                   var js = JSON.parse(d);
-                  var data = js.c1;
-                  Plotly.newPlot("c1", data, layout1);
-                  data = js.c2;
-                  Plotly.newPlot("c2", data, layout2);
+                // Define Layouts
+                  var layout1 = js.c1.layout
+                  var layout2 = js.c2.layout
+                  var layout3 = js.c3.layout
+                  var layout4 = js.c4.layout
+                  Plotly.newPlot("c1", js.c1.series, layout1);
+                  Plotly.newPlot("c2", js.c2.series, layout2);
+                  Plotly.newPlot("c3", js.c3.series, layout3);
+                  Plotly.newPlot("c4", js.c4.series, layout4);
                })
                })
            }, 1000); 

@@ -4,13 +4,12 @@ import numpy as np
 import threading, os
 from datetime import datetime
 import logging, time
-import json
 
 # define connection check safety stamp
 stamp = time.time() + 10.0
 
 blank = np.zeros([400,400,3],dtype=np.uint8)
-images = {'video': blank.copy(), 'charts': None}
+stream_data = {'video': blank.copy(), 'charts': None}
 app = Flask(__name__)
 # disable console logging
 log = logging.getLogger('werkzeug')
@@ -27,31 +26,23 @@ def index():
     '''
     return html
 
-def set_image(img, stream):
-    images[stream] = img
+def set_stream_data(data, stream):
+    stream_data[stream] = data
 
 def img_to_bytes(img):
     return cv2.imencode('.jpg', img)[1].tobytes()
 
-def get_image(stream):
+def get_data(stream):
     while True:
-        yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + img_to_bytes(images[stream]) + b'\r\n')
+        yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + img_to_bytes(stream_data[stream]) + b'\r\n')
 
 @app.route("/stream")
 def stream():
-    return Response(get_image('video'), mimetype="multipart/x-mixed-replace; boundary=frame")
+    return Response(get_data('video'), mimetype="multipart/x-mixed-replace; boundary=frame")
 
 @app.route("/chart_data")
 def chart_data():
-    data1, data2 = list(np.random.rand(11)*10), list(np.random.rand(11)*10)
-    data = {
-        'c1': [{'y': data1, 'type':'lines'}, {'y': data2, 'type':'bar'}],
-        'c2': [{'y': data2, 'type':'lines'}, {'y': data1, 'type':'bar'}]
-        
-        }
-    data = json.dumps(data, indent = 4)
-    return Response(data, mimetype='text/json')
-    #return Response(images['charts'], mimetype='text/json')
+    return Response(stream_data['charts'], mimetype='text/json')
 
 @app.route('/dashboard')   
 def dashboard():
@@ -63,7 +54,7 @@ def snap_shot():
         if request.form.get('action1') == 'Take snap shot':
             stamp = str(datetime.now()).replace(':', '.')
             img_path = 'static/{}.jpg'.format(stamp)
-            cv2.imwrite(img_path, images['video'])
+            cv2.imwrite(img_path, stream_data['video'])
             print('snap shot taken')
         else:
             pass
