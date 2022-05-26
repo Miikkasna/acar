@@ -36,23 +36,25 @@ speed_limit = 0.05 # m/s
 n_points = 20
 met = Metrics(n_points)
 # loop time
-met.add_metric('loop time', xaxis={'range':[0, n_points], 'title':'Time'}, yaxis={'range':[0, 1000], 'title':'ms'})
-met.add_series('loop time', 'real loop time', 'lines')
-met.add_series('loop time', 'min loop time', 'lines', constant=min_loop_time*1000)
+met.add_metric('Loop time', xaxis={'range':[0, n_points], 'title':'Time'}, yaxis={'range':[0, 1000], 'title':'ms'})
+met.add_series('Loop time', 'real loop time', 'lines')
+met.add_series('Loop time', 'min loop time', 'lines', constant=min_loop_time*1000)
 # speed
-met.add_metric('speed', xaxis={'range':[0, n_points], 'title':'Time'}, yaxis={'range':[0, 5], 'title':'m/s'})
-met.add_series('speed', 'current speed', 'lines')
+met.add_metric('Speed', xaxis={'range':[0, n_points], 'title':'Time'}, yaxis={'range':[0, 5], 'title':'m/s'})
+met.add_series('Speed', 'Current speed', 'lines')
 # distance
-met.add_metric('distance', xaxis={'range':[0, n_points], 'title':'Time'}, yaxis={'range':[0, 20], 'title':'m'})
-met.add_series('distance', 'cumulative distance', 'lines')
+met.add_metric('Distance', xaxis={'range':[0, n_points], 'title':'Time'}, yaxis={'range':[0, 20], 'title':'m'})
+met.add_series('Distance', 'Cumulative distance', 'lines')
 # battery
-met.add_metric('battery', xaxis={'range':[n_points-1.5, n_points-0.5], 'title':'Time'}, yaxis={'range':[0, 100], 'title':'%'})
-met.add_series('battery', 'battery charge', 'bar')
-met.add_series('battery', 'Risk limit', 'lines', constant=20)
+met.add_metric('Battery', xaxis={'range':[n_points-1.5, n_points-0.5], 'showticklabels':False}, yaxis={'range':[0, 100], 'title':'%'}, stack=True)
+risk_zone = 20
+met.add_series('Battery', 'Risk zone', 'bar', constant=risk_zone)
+met.add_series('Battery', 'Battery charge', 'bar')
+
 
 
 def main():
-    # init last time
+    # init runtime variables
     last_time = time.time()
     last_plot_time = time.time()
     dt = 1.0 # non zero initialization
@@ -80,13 +82,12 @@ def main():
         # limit speed
         if driver.car.speed > speed_limit:
             driver.stop_motor()
-            pass
         
         # update metrics
-        met.update_metric('loop time', dt*1000)
-        met.update_metric('speed', driver.car.speed)
-        met.update_metric('distance', driver.car.distance)
-        met.update_metric('battery', driver.car.battery_charge)
+        met.update_metric('Loop time', dt*1000)
+        met.update_metric('Speed', driver.car.speed)
+        met.update_metric('Distance', driver.car.distance)
+        met.update_metric('Battery', driver.car.battery_charge - risk_zone, series_number=1)
         if (time.time()-last_plot_time) > min_plot_time:
             met.update_chart_data()
             last_plot_time = time.time()
@@ -101,6 +102,7 @@ def main():
             throttle=driver.car.throttle
         )
 
+        # wait until minimum looptime
         while (time.time()-last_time) < min_loop_time:
             pass
         last_time = time.time()

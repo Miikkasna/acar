@@ -10,9 +10,12 @@ class Metrics:
         time_span = round(apx_loop_time*n_points, 1)
         self.x_title = 'last {} seconds'.format(time_span)
 
-    def add_metric(self, title, xaxis={'range':[0, 10], 'title':''}, yaxis={'range':[0, 10], 'title':''}):
+    def add_metric(self, title, xaxis={'range':[0, 10], 'title':''}, yaxis={'range':[0, 10], 'title':''}, stack=False):
         self.keys.append(title)
-        layout = {'xaxis':xaxis, 'yaxis':yaxis, 'title':title}
+        if stack:
+            layout = {'xaxis':xaxis, 'yaxis':yaxis, 'title':title, 'barmode':'stack'}
+        else:
+            layout = {'xaxis':xaxis, 'yaxis':yaxis, 'title':title}
         self.metrics[title] = {'series':[], 'layout':layout}
 
     def add_series(self, title, name, ctype, constant=0):
