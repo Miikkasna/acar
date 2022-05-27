@@ -2,16 +2,16 @@ import numpy as np
 import json
 
 class Metrics:
-    def __init__(self, n_points, apx_loop_time=0.1):
+    def __init__(self):
         self.metrics = dict()
-        self.n = n_points
         self.keys = []
+        self.n_points = {}
         self.json_charts = None
-        time_span = round(apx_loop_time*n_points, 1)
-        self.x_title = 'last {} seconds'.format(time_span)
 
-    def add_metric(self, title, xaxis={'range':[0, 10], 'title':''}, yaxis={'range':[0, 10], 'title':''}, stack=False):
+
+    def add_metric(self, title, n_points=10, xaxis={'range':[0, 10], 'title':''}, yaxis={'range':[0, 10], 'title':''}, stack=False):
         self.keys.append(title)
+        self.n_points[title] = n_points
         if stack:
             layout = {'xaxis':xaxis, 'yaxis':yaxis, 'title':title, 'barmode':'stack'}
         else:
@@ -19,8 +19,9 @@ class Metrics:
         self.metrics[title] = {'series':[], 'layout':layout}
 
     def add_series(self, title, name, ctype, constant=0):
-        datay = list(np.zeros(self.n) + constant)
-        datax = list(range(1, self.n+1))
+        n = self.metrics[title]['layout']
+        datay = list(np.zeros(self.n_points[title]) + constant)
+        datax = list(range(1, self.n_points[title]+1))
         self.metrics[title]['series'].append({'y': datay, 'x':datax, 'type':ctype, 'name':name})
 
     def update_metric(self, title, value, series_number=0):

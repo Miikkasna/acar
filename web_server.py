@@ -5,8 +5,9 @@ import threading, os
 from datetime import datetime
 import logging, time
 
-# define connection check safety stamp
+# define connection flags
 stamp = time.time() + 10.0
+force_shutdown = False
 
 blank = np.zeros([400,400,3],dtype=np.uint8)
 stream_data = {'video': blank.copy(), 'charts': None}
@@ -76,6 +77,8 @@ def connection():
     return render_template('connection.html')
 
 def shutdown_server():
+    global force_shutdown
+    force_shutdown = True
     func = request.environ.get('werkzeug.server.shutdown')
     if func is None:
         raise RuntimeError('Not running with the Werkzeug Server')

@@ -28,25 +28,29 @@ driver = AI()
 anchors = 3
 
 # define limits
-min_loop_time = 0.04 # s
+min_loop_time = 0.04 # s, set so that average loop execution time stays just below minimum
 min_plot_time = 1.5 # s, align with dashboard.html interval
 speed_limit = 0.05 # m/s
 
+
 # initialize metrics
-n_points = 20
-met = Metrics(n_points)
+met = Metrics()
 # loop time
-met.add_metric('Loop time', xaxis={'range':[0, n_points], 'title':'Time'}, yaxis={'range':[0, 1000], 'title':'ms'})
+n_points = int(10.0/min_loop_time)
+met.add_metric('Loop time', n_points, xaxis={'range':[0, n_points], 'title':'Time'}, yaxis={'range':[0, 1000], 'title':'ms'})
 met.add_series('Loop time', 'real loop time', 'lines')
 met.add_series('Loop time', 'min loop time', 'lines', constant=min_loop_time*1000)
 # speed
-met.add_metric('Speed', xaxis={'range':[0, n_points], 'title':'Time'}, yaxis={'range':[0, 5], 'title':'m/s'})
+n_points = int(10.0/min_loop_time)
+met.add_metric('Speed', n_points, xaxis={'range':[0, n_points], 'title':'Time'}, yaxis={'range':[0, 5], 'title':'m/s'})
 met.add_series('Speed', 'Current speed', 'lines')
 # distance
-met.add_metric('Distance', xaxis={'range':[0, n_points], 'title':'Time'}, yaxis={'range':[0, 20], 'title':'m'})
+n_points = int(20.0/min_loop_time)
+met.add_metric('Distance', n_points, xaxis={'range':[0, n_points], 'title':'Time'}, yaxis={'range':[0, 20], 'title':'m'})
 met.add_series('Distance', 'Cumulative distance', 'lines')
 # battery
-met.add_metric('Battery', xaxis={'range':[n_points-1.5, n_points-0.5], 'showticklabels':False}, yaxis={'range':[0, 100], 'title':'%'}, stack=True)
+n_points = 10
+met.add_metric('Battery', n_points, xaxis={'range':[n_points-1.5, n_points-0.5], 'showticklabels':False}, yaxis={'range':[0, 100], 'title':'%'}, stack=True)
 risk_zone = 20
 met.add_series('Battery', 'Risk zone', 'bar', constant=risk_zone)
 met.add_series('Battery', 'Battery charge', 'bar')
@@ -111,6 +115,8 @@ def main():
         if connection_check:
             if (time.time() - web_server.stamp) > 3.5:
                 raise Exception('connection not verified')
+        if web_server.force_shutdown:
+            raise Exception('Force shutdown')
 
 def shutdown():
     driver.stop_motor()
