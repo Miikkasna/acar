@@ -10,7 +10,15 @@
   </form>
   <hr class="rounded" style="border-radius: 5px;">
   <div style="float: left;">
-
+    <form action="/action_page.php">
+      <label for="anchors">Anchor points:</label>
+      <input type="text" id="anchors" name="anchors"><br><br>
+      <label for="sensitivity">Sensitivity:</label>
+      <input type="range" id="sensitivity" name="sensitivity" min="1" max="100" value="50" class="slider"><br><br>
+      <label for="mindist">Minimum distance:</label>
+      <input type="range" id="mindist" name="mindist" min="1" max="100" value="50" class="slider"><br><br>
+      <input type="submit" value="Update parameters">
+    </form>
   </div>
   <div style="margin-left: 620px;">
     <img src="{{ url_for('stream') }}">

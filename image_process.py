@@ -18,7 +18,7 @@ pts2 = np.float32([
 # define computer vision parameters
 anchors = 3
 blur = 7
-minDist = 80 # min dits between found circles
+minDist = 80 # min dist between found circles
 param1 = 30 
 param2 = 9 # smaller value-> more false circles
 minRadius = 6
