@@ -1,7 +1,6 @@
-import time, sys
+import time
 import cv2
 from logger import DB_logger
-import numpy as np
 import urllib.request
 from drive_control import Idle, GamePad, AI, DumDum
 import web_server
