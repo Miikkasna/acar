@@ -86,7 +86,10 @@ def main():
         # limit speed
         if driver.car.speed > speed_limit:
             driver.stop_motor()
-        
+
+        # calculate delta time
+        dt = (time.time()-last_time)
+
         # update metrics
         met.update_metric('Loop time', dt*1000)
         met.update_metric('Speed', driver.car.speed)
@@ -98,20 +101,23 @@ def main():
             web_server.set_stream_data(met.json_charts, 'charts')
 
         # log run time data
-        dt = (time.time()-last_time)
         log.log_data(loop_time=dt*1000, 
             battery_voltage=driver.car.battery_voltage,
-            distance=0,
+            distance=driver.car.distance,
             speed=driver.car.speed,
+            angle_offset=driver.car.direction_angle,
+            steering=driver.car.steering,
             throttle=driver.car.throttle
         )
 
         # wait until minimum looptime
         while (time.time()-last_time) < min_loop_time:
             pass
+
+        # update last time
         last_time = time.time()
 
-        # connection check
+        # server control check
         if connection_check:
             if (time.time() - web_server.stamp) > 3.5:
                 raise Exception('connection not verified')
