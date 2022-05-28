@@ -10,7 +10,7 @@ stamp = time.time() + 10.0
 force_shutdown = False
 
 blank = np.zeros([400,400,3],dtype=np.uint8)
-stream_data = {'video': blank.copy(), 'charts': None}
+site_data = {'video': blank.copy(), 'charts': None}
 app = Flask(__name__)
 # disable console logging
 log = logging.getLogger('werkzeug')
@@ -27,48 +27,27 @@ def index():
     '''
     return html
 
-def set_stream_data(data, stream):
-    stream_data[stream] = data
+def set_data(data, stream):
+    site_data[stream] = data
 
 def img_to_bytes(img):
     return cv2.imencode('.jpg', img)[1].tobytes()
 
-def get_data(stream):
+def get_video():
     while True:
-        yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + img_to_bytes(stream_data[stream]) + b'\r\n')
+        yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + img_to_bytes(site_data['video']) + b'\r\n')
 
 @app.route("/stream")
 def stream():
-    return Response(get_data('video'), mimetype="multipart/x-mixed-replace; boundary=frame")
+    return Response(get_video(), mimetype="multipart/x-mixed-replace; boundary=frame")
 
 @app.route("/chart_data")
 def chart_data():
-    return Response(stream_data['charts'], mimetype='text/json')
+    return Response(site_data['charts'], mimetype='text/json')
 
 @app.route('/dashboard')   
 def dashboard():
     return render_template('dashboard.html')
-
-@app.route("/snap_shot", methods=['GET', 'POST'])
-def snap_shot():
-    if request.method == 'POST':
-        if request.form.get('action1') == 'Take snap shot':
-            stamp = str(datetime.now()).replace(':', '.')
-            img_path = 'static/{}.jpg'.format(stamp)
-            cv2.imwrite(img_path, stream_data['video'])
-            print('snap shot taken')
-        else:
-            pass
-    elif request.method == 'GET':
-        return '<form method="post" action="/snap_shot"><input type="submit" value="Take snap shot" name="action1"/></form>'
-    html = (
-        '''<!DOCTYPE html>
-        <html><body>
-        <form method="post" action="/snap_shot"><input type="submit" value="Take snap shot" name="action1"/></form>
-        <img src="/{}" alt="User Image">
-        </body></html>'''.format(img_path)
-    )
-    return html
 
 @app.route('/connection')   
 def connection():

@@ -2,18 +2,22 @@
 <html>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <body>
-  <form action="{{ url_for('shutdown') }}" target="_blank">
-    <input type="submit" value="SHUTDOWN" style="width:100px;height:50px;color:orangered" />
-</form>
-<form action="{{ url_for('stream') }}" target="_blank">
-  <input type="submit" value="STREAM" style="width:100px;height:50px;color:blue" />
-</form>
-  <hr class="rounded" style="border-radius: 5px;">
-<div id="c1" style="width:600px;height:400px; float: left;"></div>
-<div id="c2" style="width:600px;height:400px;margin-left: 620px;"></div>
-<br>
-<div id="c3" style="width:600px;height:400px; float: left;"></div>
-<div id="c4" style="width:300px;height:400px;margin-left: 620px;"></div>
+  <div style="margin:auto">
+
+    <form action="{{ url_for('shutdown') }}" target="_blank">
+      <input type="submit" value="SHUTDOWN" style="width:100px;height:50px;color:orangered" />
+    </form>
+    <form action="{{ url_for('stream') }}" target="_blank">
+      <input type="submit" value="STREAM" style="width:100px;height:50px;color:blue" />
+    </form>
+      <hr class="rounded" style="border-radius: 5px;">
+    <div id="c1" style="width:600px;height:400px; float: left;"></div>
+    <div id="c2" style="width:600px;height:400px;margin-left: 620px;"></div>
+    <br>
+    <div id="c3" style="width:600px;height:400px; float: left;"></div>
+    <div id="c4" style="width:300px;height:400px;margin-left: 620px;"></div>
+
+</div>
 <script>
 
 setInterval(() => {

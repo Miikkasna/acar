@@ -32,8 +32,8 @@ met = Metrics()
 # loop time
 n_points = int(10.0/min_loop_time)
 met.add_metric('Loop time', n_points, xaxis={'range':[0, n_points], 'title':'Time'}, yaxis={'range':[0, 1000], 'title':'ms'})
-met.add_series('Loop time', 'real loop time', 'lines')
-met.add_series('Loop time', 'min loop time', 'lines', constant=min_loop_time*1000)
+met.add_series('Loop time', 'Real loop time', 'lines')
+met.add_series('Loop time', 'Min loop time', 'lines', constant=min_loop_time*1000)
 # speed
 n_points = int(10.0/min_loop_time)
 met.add_metric('Speed', n_points, xaxis={'range':[0, n_points], 'title':'Time'}, yaxis={'range':[0, 5], 'title':'m/s'})
@@ -64,7 +64,7 @@ def main():
         except:
             res, features = frame, {'direction_angle': 0}
         # update stream
-        web_server.set_stream_data(res, 'video')
+        web_server.set_data(res, 'video')
 
         # calculate inputs
         driver.calc_inputs(dt, features)
@@ -89,7 +89,7 @@ def main():
         met.update_metric('Distance', driver.car.distance)
         met.update_metric('Battery', driver.car.battery_charge - risk_zone, series_number=1)
         met.update_chart_data()
-        web_server.set_stream_data(met.json_charts, 'charts')
+        web_server.set_data(met.json_charts, 'charts')
 
         # log run time data
         log.log_data(loop_time=dt*1000, 
