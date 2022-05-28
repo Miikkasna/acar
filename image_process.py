@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*-
 import numpy as np
 import cv2
-import math
 
 # define points for top view perspective transform
 pts1 = np.float32([
-                    [108, 103], #[148, 169],
-                    [217, 101], # [206, 171],
-                    [317, 198], # [307, 267],
-                    [1, 207] # [9, 269]
+                    [108, 103],
+                    [217, 101],
+                    [317, 198],
+                    [1, 207]
                     ])
 pts2 = np.float32([
                     [115, 0],
@@ -17,7 +15,16 @@ pts2 = np.float32([
                     [115, 245]
                     ])
 
-def process_image(img, features=True, anchors=2):
+# define computer vision parameters
+anchors = 3
+blur = 7
+minDist = 80 # min dits between found circles
+param1 = 30 
+param2 = 9 # smaller value-> more false circles
+minRadius = 6
+maxRadius = 8 
+
+def process_image(img):
     # define image shape and center
     h, w, _ = img.shape
     c = int(w/2)
@@ -25,16 +32,8 @@ def process_image(img, features=True, anchors=2):
     rows, cols = gray.shape
     M = cv2.getPerspectiveTransform(pts1, pts2)
     warped = cv2.warpPerspective(img, M, (cols, rows))
-
-    blur = 7
-    blurred = cv2.medianBlur(warped, blur) #cv2.bilateralFilter(gray,10,50,50)
-    minDist = 80
-    param1 = 30 #500
-    param2 = 9 #200 #smaller value-> more false circles
-    minRadius = 6
-    maxRadius = 8 #10
-
-    # docstring of HoughCircles: HoughCircles(image, method, dp, minDist[, circles[, param1[, param2[, minRadius[, maxRadius]]]]]) -> circles
+    blurred = cv2.medianBlur(warped, blur)
+    
     circles = cv2.HoughCircles(cv2.cvtColor(blurred, cv2.COLOR_BGR2GRAY), cv2.HOUGH_GRADIENT, 1, minDist, param1=param1, param2=param2, minRadius=minRadius, maxRadius=maxRadius)
     mask = np.zeros(img.shape[:2], dtype="uint8")
     M = cv2.getPerspectiveTransform(pts2, pts1)
@@ -51,20 +50,16 @@ def process_image(img, features=True, anchors=2):
         mask = cv2.warpPerspective(mask, M, (cols, rows))
         res = cv2.bitwise_not(img,img,mask = mask)
         cv2.arrowedLine(res, (c, h), target, (0, 200, 0), thickness=2)
-        #cv2.putText(res, 'points: {}'.format(circles.shape[1]), (10,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+
     else:
         res = img
-        #cv2.putText(res, 'points: 0', (10,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+
     dx, dy = c - x, h - y
     angle = round(np.degrees(np.tan(dx/(dy+1))), 1)
     if abs(angle) > 90: angle = 1
-    #cv2.putText(res, str(angle), (w-80,h-50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
 
     # wrap extracted features
     fts = {'direction_angle': angle}
 
-    if features:
-        return res, fts
-    else:
-        return res
+    return res, fts
 

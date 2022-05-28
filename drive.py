@@ -7,11 +7,11 @@ import web_server
 import image_process as ip
 from metrics import Metrics
 
-# define connection check variable
+# set connection check variable
 connection_check = False
 
 # set up database logger
-log = DB_logger(batch=False, batch_size=50)
+log = DB_logger(batch=True, batch_size=50)
 log.set_new_testcase()
 
 # define camera
@@ -22,9 +22,6 @@ cap.set(cv2.CAP_PROP_FPS, 30)
 
 # define driver agent
 driver = AI()
-
-# define number of anchor points for image processing
-anchors = 3
 
 # define limits
 min_loop_time = 0.04 # s, set so that average loop execution time stays just below minimum
@@ -57,14 +54,13 @@ met.add_series('Battery', 'Battery charge', 'bar')
 def main():
     # init runtime variables
     last_time = time.time()
-    last_plot_time = time.time()
-    dt = 1.0 # non zero initialization
+    dt = min_loop_time # non zero initialization
     while True:
         # get camera frame
         ret, frame = cap.read()
         #process image and get input features
         try:
-            res, features = ip.process_image(frame, features=True, anchors=anchors)
+            res, features = ip.process_image(frame)
         except:
             res, features = frame, {'direction_angle': 0}
         # update stream
