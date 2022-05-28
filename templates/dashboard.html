@@ -2,24 +2,29 @@
 <html>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <body>
-  <div style="margin:auto">
+<div style="width: 80%; margin:auto">
+  <h2 style="color:black">ACAR WEB SERVER</h2>
+  <hr class="rounded" style="border-radius: 5px;">
+  <form action="{{ url_for('shutdown') }}" target="_blank">
+    <input type="submit" value="SHUTDOWN" style="width:100px;height:50px;color:orangered" />
+  </form>
+  <hr class="rounded" style="border-radius: 5px;">
+  <div style="float: left;">
 
-    <form action="{{ url_for('shutdown') }}" target="_blank">
-      <input type="submit" value="SHUTDOWN" style="width:100px;height:50px;color:orangered" />
-    </form>
-    <form action="{{ url_for('stream') }}" target="_blank">
-      <input type="submit" value="STREAM" style="width:100px;height:50px;color:blue" />
-    </form>
-      <hr class="rounded" style="border-radius: 5px;">
-    <div id="c1" style="width:600px;height:400px; float: left;"></div>
-    <div id="c2" style="width:600px;height:400px;margin-left: 620px;"></div>
-    <br>
-    <div id="c3" style="width:600px;height:400px; float: left;"></div>
-    <div id="c4" style="width:300px;height:400px;margin-left: 620px;"></div>
-
+  </div>
+  <div style="margin-left: 620px;">
+    <img src="{{ url_for('stream') }}">
+    <h1 id="fps">FPS</h1>
+  </div>
+  <hr class="rounded" style="border-radius: 5px;">
+  <div id="c1" style="width:600px;height:400px; float: left;"></div>
+  <div id="c2" style="width:600px;height:400px;margin-left: 620px;"></div>
+  <br>
+  <div id="c3" style="width:600px;height:400px; float: left;"></div>
+  <div id="c4" style="width:300px;height:400px;margin-left: 620px;"></div>
 </div>
 <script>
-
+var xhr = new XMLHttpRequest();
 setInterval(() => {
            fetch("{{ url_for('chart_data') }}")
            .then(response => {
@@ -34,6 +39,10 @@ setInterval(() => {
                   Plotly.newPlot("c2", js.c2.series, layout2);
                   Plotly.newPlot("c3", js.c3.series, layout3);
                   Plotly.newPlot("c4", js.c4.series, layout4);
+                  var fps = 1000/js.c1.series[0].y.slice(-1)[0];
+                  document.getElementById("fps").innerText = "FPS: " + parseInt(fps);
+                  xhr.open('get', "{{ url_for('connection') }}", true);
+                  xhr.send();
                })
                })
            }, 1000); 

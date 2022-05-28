@@ -8,7 +8,7 @@ import image_process as ip
 from metrics import Metrics
 
 # set connection check variable
-connection_check = False
+connection_check = True
 
 # set up database logger
 log = DB_logger(batch=True, batch_size=50)
@@ -31,7 +31,7 @@ speed_limit = 0.05 # m/s
 met = Metrics()
 # loop time
 n_points = int(10.0/min_loop_time)
-met.add_metric('Loop time', n_points, xaxis={'range':[0, n_points], 'title':'Time'}, yaxis={'range':[0, 1000], 'title':'ms'})
+met.add_metric('Loop time', n_points, xaxis={'range':[0, n_points], 'title':'Time'}, yaxis={'range':[0, 500], 'title':'ms'})
 met.add_series('Loop time', 'Real loop time', 'lines')
 met.add_series('Loop time', 'Min loop time', 'lines', constant=min_loop_time*1000)
 # speed
@@ -93,12 +93,12 @@ def main():
 
         # log run time data
         log.log_data(loop_time=dt*1000, 
-            battery_voltage=driver.car.battery_voltage,
-            distance=driver.car.distance,
-            speed=driver.car.speed,
-            angle_offset=driver.car.direction_angle,
-            steering=driver.car.steering,
-            throttle=driver.car.throttle
+            battery_voltage=float(driver.car.battery_voltage),
+            distance=float(driver.car.distance),
+            speed=float(driver.car.speed),
+            angle_offset=float(driver.car.direction_angle),
+            steering=float(driver.car.steering),
+            throttle=float(driver.car.throttle)
         )
 
         # wait until minimum looptime
@@ -110,7 +110,7 @@ def main():
 
         # server control check
         if connection_check:
-            if (time.time() - web_server.stamp) > 3.5:
+            if (time.time() - web_server.stamp) > 2.5:
                 raise Exception('connection not verified')
         if web_server.force_shutdown:
             raise Exception('Force shutdown')
