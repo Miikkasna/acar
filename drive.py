@@ -24,14 +24,12 @@ cap.set(cv2.CAP_PROP_FPS, 30)
 # define driver agent
 driver = AI()
 
-# define number of anchor points
+# define number of anchor points for image processing
 anchors = 3
 
 # define limits
 min_loop_time = 0.04 # s, set so that average loop execution time stays just below minimum
-min_plot_time = 1.5 # s, align with dashboard.html interval
 speed_limit = 0.05 # m/s
-
 
 # initialize metrics
 met = Metrics()
@@ -95,10 +93,8 @@ def main():
         met.update_metric('Speed', driver.car.speed)
         met.update_metric('Distance', driver.car.distance)
         met.update_metric('Battery', driver.car.battery_charge - risk_zone, series_number=1)
-        if (time.time()-last_plot_time) > min_plot_time:
-            met.update_chart_data()
-            last_plot_time = time.time()
-            web_server.set_stream_data(met.json_charts, 'charts')
+        met.update_chart_data()
+        web_server.set_stream_data(met.json_charts, 'charts')
 
         # log run time data
         log.log_data(loop_time=dt*1000, 
