@@ -55,17 +55,24 @@ def main():
     last_time = time.time()
     dt = min_loop_time # non zero initialization
     while True:
+        # check parameter updates
+        if web_server.params is not None:
+            ip.update_params(web_server.params)
+            web_server.params = None
+
         # get camera frame
         ret, frame = cap.read()
+
         # process image and get input features
         try:
             res, features = ip.process_image(frame)
         except:
             res, features = frame, {'direction_angle': 0}
+            
         # update stream
         web_server.set_data(res, 'video')
 
-        # calculate inputs
+        # update driver state
         driver.update_state(dt, features)
 
         # set actions

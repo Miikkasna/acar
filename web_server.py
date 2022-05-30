@@ -9,16 +9,26 @@ import logging, time
 stamp = time.time() + 10.0
 force_shutdown = False
 
+# define data dictionary
 blank = np.zeros([400,400,3],dtype=np.uint8)
 site_data = {'video': blank.copy(), 'charts': None}
+
+# initialize application
 app = Flask(__name__)
+
 # disable console logging
 log = logging.getLogger('werkzeug')
 log.disabled = True
 app.logger.disabled = True
 
-@app.route("/")
+# define ui controlled parameters
+params = None
+
+@app.route("/", methods = ['POST', 'GET'])
 def index():
+    global params
+    if request.method == 'POST':
+        params = request.form.copy()
     return render_template('dashboard.html')
 
 def set_data(data, stream):
