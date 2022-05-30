@@ -3,12 +3,15 @@ import cv2
 from logger import DB_logger
 import urllib.request
 from drive_control import Idle, GamePad, AI, DumDum
-import web_server
 import image_process as ip
 from metrics import Metrics
 
 # set connection check variable
 connection_check = False
+
+# init web server
+import web_server
+web_server.set_param_defaults(ip.params)
 
 # set up database logger
 log = DB_logger(batch=True, batch_size=50)
@@ -54,11 +57,10 @@ def main():
     # init runtime variables
     last_time = time.time()
     dt = min_loop_time # non zero initialization
+
     while True:
-        # check parameter updates
-        if web_server.params is not None:
-            ip.update_params(web_server.params)
-            web_server.params = None
+        # update parameters
+        ip.update_params(web_server.params)
 
         # get camera frame
         ret, frame = cap.read()
@@ -66,7 +68,7 @@ def main():
         # process image and get input features
         try:
             res, features = ip.process_image(frame)
-        except:
+        except Exception as e:
             res, features = frame, {'direction_angle': 0}
             
         # update stream

@@ -9,22 +9,23 @@
     <input type="submit" value="SHUTDOWN" style="width:100px;height:50px;color:orangered" />
   </form>
   <hr class="rounded" style="border-radius: 5px;">
+  <h3 style="color:black">Computer vision parameters</h3>
   <div style="float: left;">
     <form action="/" method = "POST">
       <label for="anchors">Anchor points:</label>
-      <input type="text" id="anchors" name="anchors" value="3"><br><br>
-      <label for="sensitivity">Sensitivity:</label>
-      <input type="range" id="sensitivity" name="sensitivity" min="1" max="50" value="9" class="slider" oninput="num1.value = this.value"><output id="num1">0</output><br><br>
+      <input type="text" id="anchors" name="anchors" value="{{ anchors }}"><br><br>
+      <label for="threshold">Threshold:</label>
+      <input type="range" id="threshold" name="threshold" min="1" max="50" value="{{ threshold }}" class="slider" oninput="num1.value = this.value"><output id="num1">0</output><br><br>
       <label for="param1">Parameter 1:</label>
-      <input type="range" id="param1" name="param1" min="10" max="400" value="80" class="slider" oninput="num2.value = this.value"><output id="num2">0</output><br><br>
+      <input type="range" id="param1" name="param1" min="10" max="400" value="{{ param1 }}" class="slider" oninput="num2.value = this.value"><output id="num2">0</output><br><br>
       <label for="minradius">Minimum radius:</label>
-      <input type="range" id="minradius" name="minradius" min="1" max="30" value="6" class="slider" oninput="num3.value = this.value"><output id="num3">0</output><br><br>
+      <input type="range" id="minradius" name="minradius" min="1" max="30" value="{{ minradius }}" class="slider" oninput="num3.value = this.value"><output id="num3">0</output><br><br>
       <label for="maxradius">Maximum radius:</label>
-      <input type="range" id="maxradius" name="maxradius" min="1" max="60" value="8" class="slider" oninput="num4.value = this.value"><output id="num4">0</output><br><br>
+      <input type="range" id="maxradius" name="maxradius" min="1" max="60" value="{{ maxradius }}" class="slider" oninput="num4.value = this.value"><output id="num4">0</output><br><br>
       <label for="mindist">Minimum distance:</label>
-      <input type="range" id="mindist" name="mindist" min="10" max="300" value="80" class="slider" oninput="num5.value = this.value"><output id="num5">0</output><br><br>
+      <input type="range" id="mindist" name="mindist" min="10" max="300" value="{{ mindist}}" class="slider" oninput="num5.value = this.value"><output id="num5">0</output><br><br>
       <label for="blur">Blur:</label>
-      <input type="range" id="blur" name="blur" min="1" max="30" value="7" class="slider" oninput="num6.value = this.value"><output id="num6">0</output><br><br>
+      <input type="range" id="blur" name="blur" min="1" max="30" value="{{ blur }}" class="slider" oninput="num6.value = this.value"><output id="num6">0</output><br><br>
       <input type="submit" value="Update parameters">
     </form>
   </div>
@@ -40,6 +41,12 @@
   <div id="c4" style="width:300px;height:400px;margin-left: 620px;"></div>
 </div>
 <script>
+document.getElementById("num1").value = "{{ threshold }}";
+document.getElementById("num2").value = "{{ param1 }}";
+document.getElementById("num3").value = "{{ minradius }}";
+document.getElementById("num4").value = "{{ maxradius }}";
+document.getElementById("num5").value = "{{ mindist }}";
+document.getElementById("num6").value = "{{ blur }}";
 var xhr = new XMLHttpRequest();
 setInterval(() => {
            fetch("{{ url_for('chart_data') }}")

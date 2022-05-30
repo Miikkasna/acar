@@ -15,20 +15,20 @@ pts2 = np.float32([
                     [115, 245]
                     ])
 
-# initialize computer vision parameters
+# initialize computer vision parameters. Will be overwritten by web server parameters.
 params = {
     'anchors' : 3,
     'blur' : 7,
     'mindist' : 80, # min dist between found circles
     'param1' : 30, 
-    'sensitivity' : 9, # smaller value-> more false circles
+    'threshold' : 9, # smaller value-> more false circles
     'minradius' : 6,
     'maxradius' : 8
 }
 
 def update_params(string_params_dict):
     global params
-    for key in params.keys():
+    for key in string_params_dict.keys():
         params[key] = int(string_params_dict[key])
 
 def process_image(img):
@@ -41,7 +41,7 @@ def process_image(img):
     warped = cv2.warpPerspective(img, M, (cols, rows))
     blurred = cv2.medianBlur(warped, params['blur'])
     
-    circles = cv2.HoughCircles(cv2.cvtColor(blurred, cv2.COLOR_BGR2GRAY), cv2.HOUGH_GRADIENT, 1, params['mindist'], param1=params['param1'], param2=params['sensitivity'], minRadius=params['minradius'], maxRadius=params['maxradius'])
+    circles = cv2.HoughCircles(cv2.cvtColor(blurred, cv2.COLOR_BGR2GRAY), cv2.HOUGH_GRADIENT, 1, params['mindist'], param1=params['param1'], param2=params['threshold'], minRadius=params['minradius'], maxRadius=params['maxradius'])
     mask = np.zeros(img.shape[:2], dtype="uint8")
     M = cv2.getPerspectiveTransform(pts2, pts1)
     x, y = c, 1

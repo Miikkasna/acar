@@ -21,15 +21,19 @@ log = logging.getLogger('werkzeug')
 log.disabled = True
 app.logger.disabled = True
 
-# define ui controlled parameters
-params = None
+# define ui controlled parameters dictionary
+params = dict()
+def set_param_defaults(param_dict):
+    global params
+    for key in param_dict.keys():
+        params[key] = param_dict[key]
 
 @app.route("/", methods = ['POST', 'GET'])
 def index():
     global params
     if request.method == 'POST':
         params = request.form.copy()
-    return render_template('dashboard.html')
+    return render_template('dashboard.html', **params)
 
 def set_data(data, stream):
     site_data[stream] = data
