@@ -3,3 +3,4 @@ dbparams.py
 __pycache__
 images
 static
+.vscode

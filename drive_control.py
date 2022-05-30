@@ -20,16 +20,12 @@ pwm_freq = 50
 gpio.set_PWM_frequency(servo_pin, pwm_freq)
 gpio.set_PWM_frequency(mcu_pin, pwm_freq)
 
-
-
-
 # initialize serial
 ser = serial.Serial('/dev/ttyUSB0', 115200, timeout=0.01)
 ser.reset_input_buffer()
 
 def map(x, in_min, in_max, out_min, out_max):
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
-
 
 class Car():
     def __init__(self):
@@ -79,7 +75,7 @@ class Driver():
         dc = self.calc_duty_cycle(pw)
         self.set_mcu(dc)
 
-    def calc_inputs(self, dt, features=None):
+    def update_state(self, dt, features):
         while ser.in_waiting > 0:
             data = ser.readline().decode('utf-8').rstrip().split(';')
             self.car.battery_voltage = float(data[0])
@@ -108,7 +104,7 @@ class GamePad(Driver):
 
 class Idle(Driver):
     def __init__(self):
-        print('Idle selected')
+        print('Idle driver selected')
 
     def set_actions(self):
         self.car.throttle = 0
@@ -116,7 +112,7 @@ class Idle(Driver):
 
 class AI(Driver):
     def __init__(self):
-        print('AI selected')
+        print('AI driver selected')
         n_inputs, n_outputs = 2, 2
         self.agent = NeuralNetwork(n_inputs, [4], n_outputs)
         self.agent.network = np.load('trained_agent.npy', allow_pickle=True)
@@ -135,7 +131,7 @@ class AI(Driver):
 
 class DumDum(Driver):
     def __init__(self):
-        print('DumDum selected')
+        print('DumDum driver selected')
 
     def set_actions(self):
         self.car.throttle = 0.03

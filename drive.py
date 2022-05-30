@@ -52,7 +52,6 @@ met.add_series('Battery', 'Risk zone', 'bar', constant=risk_zone)
 met.add_series('Battery', 'Battery charge', 'bar')
 
 
-
 def main():
     # init runtime variables
     last_time = time.time()
@@ -61,7 +60,7 @@ def main():
     while True:
         # get camera frame
         ret, frame = cap.read()
-        #process image and get input features
+        # process image and get input features
         try:
             res, features = ip.process_image(frame, features=True, anchors=anchors)
         except:
@@ -70,7 +69,7 @@ def main():
         web_server.set_stream_data(res, 'video')
 
         # calculate inputs
-        driver.calc_inputs(dt, features)
+        driver.update_state(dt, features)
 
         # set actions
         driver.set_actions()

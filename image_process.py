@@ -51,14 +51,11 @@ def process_image(img, features=True, anchors=2):
         mask = cv2.warpPerspective(mask, M, (cols, rows))
         res = cv2.bitwise_not(img,img,mask = mask)
         cv2.arrowedLine(res, (c, h), target, (0, 200, 0), thickness=2)
-        #cv2.putText(res, 'points: {}'.format(circles.shape[1]), (10,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
     else:
         res = img
-        #cv2.putText(res, 'points: 0', (10,30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
     dx, dy = c - x, h - y
     angle = round(np.degrees(np.tan(dx/(dy+1))), 1)
     if abs(angle) > 90: angle = 1
-    #cv2.putText(res, str(angle), (w-80,h-50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
 
     # wrap extracted features
     fts = {'direction_angle': angle}
