@@ -8,7 +8,7 @@ import image_process as ip
 from metrics import Metrics
 
 # set connection check variable
-connection_check = True
+connection_check = False
 
 # set up database logger
 log = DB_logger(batch=True, batch_size=50)

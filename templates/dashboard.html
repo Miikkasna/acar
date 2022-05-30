@@ -14,17 +14,17 @@
       <label for="anchors">Anchor points:</label>
       <input type="text" id="anchors" name="anchors" value="3"><br><br>
       <label for="sensitivity">Sensitivity:</label>
-      <input type="range" id="sensitivity" name="sensitivity" min="1" max="50" value="9" class="slider"><br><br>
+      <input type="range" id="sensitivity" name="sensitivity" min="1" max="50" value="9" class="slider" oninput="num1.value = this.value"><output id="num1">0</output><br><br>
       <label for="param1">Parameter 1:</label>
-      <input type="range" id="param1" name="param1" min="10" max="400" value="80" class="slider"><br><br>
+      <input type="range" id="param1" name="param1" min="10" max="400" value="80" class="slider" oninput="num2.value = this.value"><output id="num2">0</output><br><br>
       <label for="minradius">Minimum radius:</label>
-      <input type="range" id="minradius" name="minradius" min="1" max="30" value="6" class="slider"><br><br>
+      <input type="range" id="minradius" name="minradius" min="1" max="30" value="6" class="slider" oninput="num3.value = this.value"><output id="num3">0</output><br><br>
       <label for="maxradius">Maximum radius:</label>
-      <input type="range" id="maxradius" name="maxradius" min="1" max="60" value="8" class="slider"><br><br>
+      <input type="range" id="maxradius" name="maxradius" min="1" max="60" value="8" class="slider" oninput="num4.value = this.value"><output id="num4">0</output><br><br>
       <label for="mindist">Minimum distance:</label>
-      <input type="range" id="mindist" name="mindist" min="10" max="300" value="80" class="slider"><br><br>
+      <input type="range" id="mindist" name="mindist" min="10" max="300" value="80" class="slider" oninput="num5.value = this.value"><output id="num5">0</output><br><br>
       <label for="blur">Blur:</label>
-      <input type="range" id="blur" name="blur" min="1" max="30" value="7" class="slider"><br><br>
+      <input type="range" id="blur" name="blur" min="1" max="30" value="7" class="slider" oninput="num6.value = this.value"><output id="num6">0</output><br><br>
       <input type="submit" value="Update parameters">
     </form>
   </div>
