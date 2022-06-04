@@ -80,7 +80,7 @@ class Driver():
             data = ser.readline().decode('utf-8').rstrip().split(';')
             self.car.battery_voltage = float(data[0])
             self.car.speed = float(data[1])
-        self.car.battery_charge = map(self.car.battery_voltage, 4.6, 8.4, 0, 100)
+        self.car.battery_charge = map(self.car.battery_voltage, 5.1, 8.4, 0, 100)
         self.car.distance += self.car.speed*dt
         self.car.direction_angle = features['direction_angle']
 
