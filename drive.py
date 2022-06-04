@@ -28,7 +28,7 @@ driver = AI()
 
 # define limits
 min_loop_time = 0.04 # s, set so that average loop execution time stays just below minimum
-speed_limit = 0.05 # m/s
+speed_limit = 0.1 # m/s
 
 # initialize metrics
 met = Metrics()

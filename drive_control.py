@@ -117,7 +117,8 @@ class AI(Driver):
         self.agent = NeuralNetwork(n_inputs, [4], n_outputs)
         self.agent.network = np.load('trained_agent.npy', allow_pickle=True)
         self.speed_correction = 4.0
-        self.throttle_correction = 0.15
+        self.throttle_correction = 0.6
+        self.steering_correction = 0.6
         self.dir_switch = 1
 
     def set_actions(self):
@@ -126,7 +127,7 @@ class AI(Driver):
         inputs = [speed, angle]
         output = self.agent.forward_propagate(inputs)
 
-        self.car.steering = self.limit(float(output[0]))
+        self.car.steering = self.limit(float(output[0])*self.steering_correction)
         self.car.throttle = self.limit(float(output[1]*self.throttle_correction))
 
 class DumDum(Driver):
