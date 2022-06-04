@@ -9,8 +9,8 @@
     <input type="submit" value="SHUTDOWN" style="width:100px;height:50px;color:orangered" />
   </form>
   <hr class="rounded" style="border-radius: 5px;">
-  <h3 style="color:black">Computer vision parameters</h3>
   <div style="float: left;">
+    <h3 style="color:black">Computer vision parameters</h3>
     <form action="/" method = "POST">
       <label for="anchors">Anchor points:</label>
       <input type="text" id="anchors" name="anchors" value="{{ anchors }}"><br><br>
@@ -29,8 +29,8 @@
       <input type="submit" value="Update parameters">
     </form>
   </div>
-  <div style="margin-left: 620px;">
-    <img src="{{ url_for('stream') }}">
+  <div style="margin-left: 720px;">
+    <img src="{{ url_for('stream') }}" style="width:420px;height:360px;">
     <h1 id="fps">FPS</h1>
   </div>
   <hr class="rounded" style="border-radius: 5px;">
