@@ -27,3 +27,9 @@ This repository holds code for the autonomous RC-car project. The project is wri
   - Efficient Neural Network for real time output calculations
   - Simulator trained Neural Network agent
   - Xbox controller code
+
+### Dashboard
+<img src="pictures/dashboard.pmg.jpg" width="1000">
+
+### Trained AI agent driving
+![Driving](pictures/driving1.gif)
