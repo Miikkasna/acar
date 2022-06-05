@@ -28,7 +28,7 @@ driver = AI()
 
 # define limits
 min_loop_time = 0.04 # s, set so that average loop execution time stays just below minimum
-speed_limit = 0.1 # m/s
+speed_limit = 10.5 # m/s
 
 # initialize metrics
 met = Metrics()
@@ -43,7 +43,7 @@ met.add_metric('Speed', n_points, xaxis={'range':[0, n_points], 'title':'Time'},
 met.add_series('Speed', 'Current speed', 'lines')
 # distance
 n_points = int(20.0/min_loop_time)
-met.add_metric('Distance', n_points, xaxis={'range':[0, n_points], 'title':'Time'}, yaxis={'range':[0, 20], 'title':'m'})
+met.add_metric('Distance', n_points, xaxis={'range':[0, n_points], 'title':'Time'}, yaxis={'range':[0, 55], 'title':'m'})
 met.add_series('Distance', 'Cumulative distance', 'lines')
 # battery
 n_points = 10

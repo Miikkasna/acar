@@ -117,8 +117,8 @@ class AI(Driver):
         self.agent = NeuralNetwork(n_inputs, [4], n_outputs)
         self.agent.network = np.load('trained_agent.npy', allow_pickle=True)
         self.speed_correction = 4.0
-        self.throttle_correction = 0.6
-        self.steering_correction = 0.8
+        self.throttle_correction = 0.23
+        self.steering_correction = 0.7
 
     def set_actions(self):
         angle = self.car.direction_angle/self.MAX_CURVE_ANGLE
@@ -134,5 +134,5 @@ class DumDum(Driver):
         print('DumDum driver selected')
 
     def set_actions(self):
-        self.car.throttle = 0.03
+        self.car.throttle = 0.02
         self.car.steering = self.limit(-self.car.direction_angle/self.MAX_CURVE_ANGLE)
