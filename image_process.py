@@ -50,7 +50,7 @@ def process_image(img):
         circles = np.uint16(np.around(circles))[0,:params['anchors']] # take slice of best points
         for i, v in enumerate(circles):
             cv2.putText(mask, (1+i)*'|', (v[0], v[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1, cv2.LINE_AA)
-        weights = [2, 1, 1, 1, 1][:circles.shape[0]]
+        weights = [3, 2, 1, 1, 1, 1][:circles.shape[0]]
         x = np.average(circles[:, 0], weights=weights)
         y = np.average(circles[:, 1], weights=weights)
         target = (int(x), int(y))

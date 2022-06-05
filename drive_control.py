@@ -41,7 +41,7 @@ class Car():
 class Driver():
     def __init__(self):
         self.car = Car()
-        self.MAX_CURVE_ANGLE = 60
+        self.MAX_CURVE_ANGLE = 90
         self.LIMIT_CONTROL = 0.6 # %
 
     def __init_subclass__(self):
@@ -118,11 +118,10 @@ class AI(Driver):
         self.agent.network = np.load('trained_agent.npy', allow_pickle=True)
         self.speed_correction = 4.0
         self.throttle_correction = 0.6
-        self.steering_correction = 0.6
-        self.dir_switch = 1
+        self.steering_correction = 0.8
 
     def set_actions(self):
-        angle = self.dir_switch*self.car.direction_angle/self.MAX_CURVE_ANGLE
+        angle = self.car.direction_angle/self.MAX_CURVE_ANGLE
         speed = self.car.speed*self.speed_correction
         inputs = [speed, angle]
         output = self.agent.forward_propagate(inputs)
