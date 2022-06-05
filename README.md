@@ -1,8 +1,8 @@
 # Very simple autonomous RC car
 This repository holds code for the autonomous RC-car project. The project is written in Python (Arduino part C++). Driving is based on following cookies on the floor, and the Driver agent is using Neural Network to calculate actions based on inputs.  More information about the project and code can be found from the project blog.
 
-![Alt Text](pictures/acar1.jpg)
-![Alt Text](pictures/acar2.jpg)
+![Alt Text](pictures/acar1.jpg | width=200)
+![Alt Text](pictures/acar2.jpg | width=200)
 
 ## Hardware components:
   - Kyosho Electric on-road RC car
