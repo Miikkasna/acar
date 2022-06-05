@@ -29,7 +29,7 @@ This repository holds code for the autonomous RC-car project. The project is wri
   - Xbox controller code
 
 ### Dashboard
-<img src="pictures/dashboard.png" width="1000">
+<img src="pictures/dashboard.jpg" width="800">
 
 ### Trained AI agent driving
 ![Driving](pictures/driving1.gif)
