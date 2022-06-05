@@ -1,7 +1,7 @@
 # Very simple autonomous RC car
 This repository holds code for the autonomous RC-car project. The project is written in Python (Arduino part C++). Driving is based on following cookies on the floor, and the Driver agent is using Neural Network to calculate actions based on inputs.  More information about the project and code can be found from the project blog.
 
-##Hardware components:
+## Hardware components:
   - Kyosho Electric on-road RC car
   - Raspberry Pi model 4
   - Pi camera
@@ -10,7 +10,7 @@ This repository holds code for the autonomous RC-car project. The project is wri
   - Xbox360 controller and the USB-dongle
   - Power bank
   - Some wires, resistors, etc
-##Software content:
+## Software content:
   - Computer Vision/Image processing for finding dem cookies on the floor
   - Drive control
     - RasPi PWM for motor and servo control
